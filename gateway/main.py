@@ -40,7 +40,11 @@ async def proxy_user_service(path: str, request: Request):
         try:
             response = await client.request(method, url, headers=headers, content=body)
 
-            content_type = response.headers.get("content-type", "")
+            # 🔍 Debug here
+            print("🔍 Response content-type:", response.headers.get("content-type"))
+            print("📦 Raw content preview:", repr(response.content[:100]))
+
+            content_type = response.headers.get("content-type", "").lower()
             if "application/json" in content_type:
                 return JSONResponse(content=response.json(), status_code=response.status_code)
             else:
@@ -49,9 +53,10 @@ async def proxy_user_service(path: str, request: Request):
                     status_code=response.status_code,
                     headers={"content-type": content_type or "application/octet-stream"}
                 )
-        except httpx.RequestError as exc:
-            print("Request failed:", exc)
-            return JSONResponse({"detail": "User service unreachable."}, status_code=502)
+        except Exception as e:
+            print("❌ Error occurred:", e)
+            return JSONResponse({"detail": "Internal proxy error"}, status_code=500)
+
 
 
 # ---------- TRANSPORT SERVICE PROXY (JWT Required) ----------

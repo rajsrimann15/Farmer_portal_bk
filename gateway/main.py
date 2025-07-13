@@ -25,6 +25,7 @@ def is_public_auction_path(path: str) -> bool:
 # ---------- HEALTH CHECK ----------
 
 
+
 # ---------- USER SERVICE PROXY ----------
 @app.api_route("/api/users/{path:path}", methods=["GET", "POST", "PUT", "DELETE"])
 async def proxy_user_service(path: str, request: Request):

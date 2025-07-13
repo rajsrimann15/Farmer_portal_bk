@@ -1,16 +1,14 @@
-from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import Response
+from fastapi import FastAPI, HTTPException, Request, Response
 import httpx
 from jwt_utils import verify_jwt_token
-from decouple import config
 
 app = FastAPI()
 
 # Service endpoints
-USER_SERVICE = config("USER_SERVICE")
-TRANSPORT_SERVICE = config("TRANSPORT_SERVICE")
-ECOM_SERVICE = config("ECOM_SERVICE")
-AUCTION_SERVICE = config("AUCTION_SERVICE")
+USER_SERVICE = "https://farmer-portal-user-service.onrender.com"
+TRANSPORT_SERVICE = "http://localhost:8002"
+ECOM_SERVICE = "http://localhost:8004"
+AUCTION_SERVICE = "http://localhost:8006"
 
 # Public auction endpoints (whitelist)
 PUBLIC_AUCTION_ENDPOINTS = [
@@ -31,13 +29,14 @@ async def proxy_user_service(path: str, request: Request):
         headers = dict(request.headers)
         method = request.method.lower()
         response = await client.request(method, url, headers=headers, content=body)
-
-        return Response(
-            content=response.content,
-            status_code=response.status_code,
-            headers=dict(response.headers)
-        )
-
+        try:
+            return response.json()
+        except Exception:
+            return Response(
+                content=response.content,
+                status_code=response.status_code,
+                headers=dict(response.headers)
+            )
 
 # ---------- TRANSPORT SERVICE PROXY (JWT Required) ----------
 @app.api_route("/api/transport/{path:path}", methods=["GET", "POST", "PUT", "DELETE"])
@@ -58,17 +57,13 @@ async def proxy_transport_service(path: str, request: Request):
 
         method = request.method.lower()
         response = await client.request(method, url, headers=headers, content=body)
-
-        return Response(
-            content=response.content,
-            status_code=response.status_code,
-            headers=dict(response.headers)
-        )
+        return response.json()
 
 
 # ---------- AUCTION SERVICE PROXY (Some Routes Open) ----------
 @app.api_route("/api/auction/{path:path}", methods=["GET", "POST", "PUT", "DELETE"])
 async def proxy_auction_service(path: str, request: Request):
+    # Only protect routes that are NOT public
     if not is_public_auction_path(path):
         auth = request.headers.get("Authorization")
         if not auth or not auth.startswith("Bearer "):
@@ -86,12 +81,7 @@ async def proxy_auction_service(path: str, request: Request):
 
         method = request.method.lower()
         response = await client.request(method, url, headers=headers, content=body)
-
-        return Response(
-            content=response.content,
-            status_code=response.status_code,
-            headers=dict(response.headers)
-        )
+        return response.json()
 
 
 # ---------- ECOM SERVICE PROXY (JWT Required) ----------
@@ -113,9 +103,4 @@ async def proxy_ecom_service(path: str, request: Request):
 
         method = request.method.lower()
         response = await client.request(method, url, headers=headers, content=body)
-
-        return Response(
-            content=response.content,
-            status_code=response.status_code,
-            headers=dict(response.headers)
-        )
+        return response.json()

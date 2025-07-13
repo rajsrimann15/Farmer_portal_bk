@@ -1,14 +1,15 @@
 from fastapi import FastAPI, HTTPException, Request
 import httpx
 from jwt_utils import verify_jwt_token
+from decouple import config
 
 app = FastAPI()
 
 # Service endpoints
-USER_SERVICE = "http://localhost:8000"
-TRANSPORT_SERVICE = "http://localhost:8002"
-ECOM_SERVICE = "http://localhost:8004"
-AUCTION_SERVICE = "http://localhost:8006"
+USER_SERVICE = config("SECRET_KEY")
+TRANSPORT_SERVICE = config("SECRET_KEY")
+ECOM_SERVICE = config("SECRET_KEY")
+AUCTION_SERVICE = config("SECRET_KEY")
 
 # Public auction endpoints (whitelist)
 PUBLIC_AUCTION_ENDPOINTS = [

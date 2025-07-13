@@ -6,10 +6,10 @@ from decouple import config
 app = FastAPI()
 
 # Service endpoints
-USER_SERVICE = config("SECRET_KEY")
-TRANSPORT_SERVICE = config("SECRET_KEY")
-ECOM_SERVICE = config("SECRET_KEY")
-AUCTION_SERVICE = config("SECRET_KEY")
+USER_SERVICE = config("USER_SERVICE")
+TRANSPORT_SERVICE = config("TRANSPORT_SERVICE")
+ECOM_SERVICE = config("ECOM_SERVICE")
+AUCTION_SERVICE = config("AUCTION_SERVICE")
 
 # Public auction endpoints (whitelist)
 PUBLIC_AUCTION_ENDPOINTS = [

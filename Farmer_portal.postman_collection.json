@@ -1,0 +1,961 @@
+{
+	"info": {
+		"_postman_id": "0c6d45e1-e7eb-4699-9135-6584c249f07d",
+		"name": "Farmer_portal",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "36805388"
+	},
+	"item": [
+		{
+			"name": "user_service",
+			"item": [
+				{
+					"name": "farmer_register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"farmer_govt_id\": \"F12345\",\r\n    \"name\": \"Kumar\",\r\n    \"password\": \"123\",\r\n    \"gender\": \"Male\",\r\n    \"age\": 35,\r\n    \"email\": \"kumar@example.com\",\r\n    \"phone_number\": \"9876543210\",\r\n    \"address\": \"123 Main Street\",\r\n    \"district\": \"Coimbatore\",\r\n    \"state\": \"Tamil nadu\",\r\n    \"country\": \"India\",\r\n    \"zone\": 1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/users/farmer/register/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"users",
+								"farmer",
+								"register",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "farmer_login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n \"phone_number\": \"9876543210\",\r\n \"password\":\"123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/users/farmer/login/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"users",
+								"farmer",
+								"login",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "transporter_register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"gst_id\": \"29ABCDE1234F2Z5\",\r\n  \"owner_name\": \"Suresh Singh\",\r\n  \"phone_number\": \"9876543210\",\r\n  \"email\": \"suresh.singh@example.com\",\r\n  \"password\": \"secure_password@123\",\r\n  \"address\": \"123, Main Road, Bengaluru\",\r\n  \"district\": \"Coimbatore\",\r\n    \"state\": \"Tamil nadu\",\r\n    \"country\": \"India\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/users/transporter/register/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"users",
+								"transporter",
+								"register",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "transporter_login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"email\": \"suresh.singh@example.com\",\r\n   \"password\":\"secure_password@123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/users/transporter/login/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"users",
+								"transporter",
+								"login",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "consumer_register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"Priya Sharma\",\r\n  \"phone_number\": \"9876543211\",\r\n  \"email\": \"priya.sharma@example.com\",\r\n  \"password\": \"secure_password@456\",\r\n  \"address\": \"456, Market Street, Mumbai\",\r\n   \"district\": \"Coimbatore\",\r\n    \"state\": \"Tamil nadu\",\r\n    \"country\": \"India\"\r\n  \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/users/consumer/register/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"users",
+								"consumer",
+								"register",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "consumer_login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"email\": \"priya.sharma@example.com\",\r\n\"password\":\"secure_password@456\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/users/consumer/login/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"users",
+								"consumer",
+								"login",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "transportation_service",
+			"item": [
+				{
+					"name": "post_schedule(T)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUzMDAzNDMwLCJpYXQiOjE3NTIzOTg2MzAsImp0aSI6IjhmMTk0MmM2Mjc0ZTRlOTg4MDBlZjFkNGQ1NmZjM2VjIiwidXNlcl9pZCI6MSwiaXNzIjoicmFqLWtleSIsImdzdF9pZCI6IjI5QUJDREUxMjM0RjJaNSJ9.Hi2iugdXRduv3rLTpn23vlfrFSFTuSsQuY1lIef3mE1ufIqiEjGrIHMY89LpwiHPM9-x7rO3L6lPbEfT636GGxnILp6HkGJWx0lhUvWIFiZSn0v7TG9-UB9hiaIJVpK_M1BoHdBOxzQ5FvjYFtxanP6l5PjmVFbpvcZJsSsI6vr2GP8FMTB_ArBoAecw35hnj3aYsA2GMh3QcFhVRPH3EqRq73SoizvTJjQmiJ7UbsD5AvCXjuAB4b9y_3IjEkGLlW_7pjRDfUzQ23Q20PkM9ypiRfmBa2lzZLzwk6xMEw-Pyh_jY6mZ49sMNcJGekcjtuMykEJoB92zSGwCxFTu-g",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"transporter_id\": \"transporter_002\",\r\n  \"vehicle_name\": \"Tata Ace\",\r\n  \"vehicle_type\": \"Mini Truck\",\r\n  \"vehicle_number\": \"TN01AB1234\",\r\n  \"total_capacity\": 1000,\r\n  \"price_per_kg\": 5.0,\r\n  \"price_per_km\": 2.5,\r\n  \"support_loading\": true,\r\n  \"support_unloading\": false,\r\n  \"start_place\": \"Coimbatore\",\r\n  \"start_time\": \"09:00:00\",\r\n  \"start_date\": \"2025-06-13\",\r\n  \"destination_place\": \"Chennai\",\r\n  \"destination_date\": \"2025-06-14\",\r\n  \r\n  \"route_points\": [\r\n    {\r\n      \"stop\":1,\r\n      \"to_place\": \"Salem\",\r\n      \"date\": \"2025-06-13\",\r\n      \"approx_time\": \"12:00:00\"\r\n    },\r\n    {\r\n      \"stop\": 2,\r\n      \"to_place\": \"Vellore\",\r\n      \"date\": \"2025-06-13\",\r\n      \"approx_time\": \"10:00:00\"\r\n    },\r\n    {\r\n      \"stop\":3,\r\n      \"to_place\": \"Chennai\",\r\n      \"date\": \"2025-06-13\",\r\n      \"approx_time\": \"08:00:00\"\r\n    }\r\n  ]\r\n}\r\n\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/transport/schedule/create/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"transport",
+								"schedule",
+								"create",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get_schedule(F)",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUzMDAzOTU2LCJpYXQiOjE3NTIzOTkxNTYsImp0aSI6IjJlYTc1MDUxNzVhNjQ3MTY4MWY3YjQ1OGNkN2FkM2JmIiwidXNlcl9pZCI6MSwiaXNzIjoicmFqLWtleSIsImVtYWlsIjoia3VtYXJAZXhhbXBsZS5jb20ifQ.db0du5x0dSjYKMoToU-wqc-3MiGl9vhDvHD2VCtF4WSI-afZX61ni7e9msff1C2Wzr2WpDt9x90EywJEqDGtoms5sKx_I96pGvsY1tRv9Webo83NQNIWGGjbZRU_N1p0ryWga9aKKhRqO2g4iCCGjYHhqHQNKrmWJx60d_o9zhQeyzv2lPBbhA_ivmTUftenaYtBXedRTR8Kh7Rk1Oen-_tSsA8SVtoHuGsSIUgSqbH6pOW-gdW1qEh6AI7Dkr3xFFgYeW70joHpjcN5YT_94dWKIlfwy6IfHUkEpm-aMOv55Iyry2hSahvH0sM-opKjx6edGP1gSpCUtoitR8PUKA",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "text"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/transport/schedule/available/?from_place=Salem&to_place=Chennai&weight=200&date=2025-06-13",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"transport",
+								"schedule",
+								"available",
+								""
+							],
+							"query": [
+								{
+									"key": "from_place",
+									"value": "Salem"
+								},
+								{
+									"key": "to_place",
+									"value": "Chennai"
+								},
+								{
+									"key": "weight",
+									"value": "200"
+								},
+								{
+									"key": "date",
+									"value": "2025-06-13"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "post_booking(F)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUzMDAzOTU2LCJpYXQiOjE3NTIzOTkxNTYsImp0aSI6IjJlYTc1MDUxNzVhNjQ3MTY4MWY3YjQ1OGNkN2FkM2JmIiwidXNlcl9pZCI6MSwiaXNzIjoicmFqLWtleSIsImVtYWlsIjoia3VtYXJAZXhhbXBsZS5jb20ifQ.db0du5x0dSjYKMoToU-wqc-3MiGl9vhDvHD2VCtF4WSI-afZX61ni7e9msff1C2Wzr2WpDt9x90EywJEqDGtoms5sKx_I96pGvsY1tRv9Webo83NQNIWGGjbZRU_N1p0ryWga9aKKhRqO2g4iCCGjYHhqHQNKrmWJx60d_o9zhQeyzv2lPBbhA_ivmTUftenaYtBXedRTR8Kh7Rk1Oen-_tSsA8SVtoHuGsSIUgSqbH6pOW-gdW1qEh6AI7Dkr3xFFgYeW70joHpjcN5YT_94dWKIlfwy6IfHUkEpm-aMOv55Iyry2hSahvH0sM-opKjx6edGP1gSpCUtoitR8PUKA",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"schedule\": \"d803de96-fcc5-48a4-bacc-e93c0f8c118b\",\r\n  \"from_place\": \"Salem\",\r\n  \"to_place\": \"Chennai\",\r\n  \"weight\": 200,\r\n  \"farmer_id\": \"1\",\r\n  \"date\":\"2025-06-13\",\r\n  \"description\":\"rice,wheat\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/transport/schedule/book/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"transport",
+								"schedule",
+								"book",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get_bookings(T)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": ""
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get_my_bookings(F)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUzMDAzOTU2LCJpYXQiOjE3NTIzOTkxNTYsImp0aSI6IjJlYTc1MDUxNzVhNjQ3MTY4MWY3YjQ1OGNkN2FkM2JmIiwidXNlcl9pZCI6MSwiaXNzIjoicmFqLWtleSIsImVtYWlsIjoia3VtYXJAZXhhbXBsZS5jb20ifQ.db0du5x0dSjYKMoToU-wqc-3MiGl9vhDvHD2VCtF4WSI-afZX61ni7e9msff1C2Wzr2WpDt9x90EywJEqDGtoms5sKx_I96pGvsY1tRv9Webo83NQNIWGGjbZRU_N1p0ryWga9aKKhRqO2g4iCCGjYHhqHQNKrmWJx60d_o9zhQeyzv2lPBbhA_ivmTUftenaYtBXedRTR8Kh7Rk1Oen-_tSsA8SVtoHuGsSIUgSqbH6pOW-gdW1qEh6AI7Dkr3xFFgYeW70joHpjcN5YT_94dWKIlfwy6IfHUkEpm-aMOv55Iyry2hSahvH0sM-opKjx6edGP1gSpCUtoitR8PUKA",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5000/api/transport/bookings/farmer/?farmer_id=1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"transport",
+								"bookings",
+								"farmer",
+								""
+							],
+							"query": [
+								{
+									"key": "farmer_id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "ecom_service",
+			"item": [
+				{
+					"name": "post-product(F)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUzMDAzOTU2LCJpYXQiOjE3NTIzOTkxNTYsImp0aSI6IjJlYTc1MDUxNzVhNjQ3MTY4MWY3YjQ1OGNkN2FkM2JmIiwidXNlcl9pZCI6MSwiaXNzIjoicmFqLWtleSIsImVtYWlsIjoia3VtYXJAZXhhbXBsZS5jb20ifQ.db0du5x0dSjYKMoToU-wqc-3MiGl9vhDvHD2VCtF4WSI-afZX61ni7e9msff1C2Wzr2WpDt9x90EywJEqDGtoms5sKx_I96pGvsY1tRv9Webo83NQNIWGGjbZRU_N1p0ryWga9aKKhRqO2g4iCCGjYHhqHQNKrmWJx60d_o9zhQeyzv2lPBbhA_ivmTUftenaYtBXedRTR8Kh7Rk1Oen-_tSsA8SVtoHuGsSIUgSqbH6pOW-gdW1qEh6AI7Dkr3xFFgYeW70joHpjcN5YT_94dWKIlfwy6IfHUkEpm-aMOv55Iyry2hSahvH0sM-opKjx6edGP1gSpCUtoitR8PUKA",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"farmer_id\": \"1\",\r\n  \"name\": \"Organic sweet\",\r\n  \"description\": \"Fresh organic and tasteful.\",\r\n  \"price\": 100.00,\r\n  \"quantity_available\": 150\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/ecom/farmer/post-product/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"ecom",
+								"farmer",
+								"post-product",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get_products (C)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUzMDAzOTU2LCJpYXQiOjE3NTIzOTkxNTYsImp0aSI6IjJlYTc1MDUxNzVhNjQ3MTY4MWY3YjQ1OGNkN2FkM2JmIiwidXNlcl9pZCI6MSwiaXNzIjoicmFqLWtleSIsImVtYWlsIjoia3VtYXJAZXhhbXBsZS5jb20ifQ.db0du5x0dSjYKMoToU-wqc-3MiGl9vhDvHD2VCtF4WSI-afZX61ni7e9msff1C2Wzr2WpDt9x90EywJEqDGtoms5sKx_I96pGvsY1tRv9Webo83NQNIWGGjbZRU_N1p0ryWga9aKKhRqO2g4iCCGjYHhqHQNKrmWJx60d_o9zhQeyzv2lPBbhA_ivmTUftenaYtBXedRTR8Kh7Rk1Oen-_tSsA8SVtoHuGsSIUgSqbH6pOW-gdW1qEh6AI7Dkr3xFFgYeW70joHpjcN5YT_94dWKIlfwy6IfHUkEpm-aMOv55Iyry2hSahvH0sM-opKjx6edGP1gSpCUtoitR8PUKA",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5000/api/ecom/products/?search=sweet",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"ecom",
+								"products",
+								""
+							],
+							"query": [
+								{
+									"key": "search",
+									"value": "sweet"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "product_booking(C)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUzMDAzOTU2LCJpYXQiOjE3NTIzOTkxNTYsImp0aSI6IjJlYTc1MDUxNzVhNjQ3MTY4MWY3YjQ1OGNkN2FkM2JmIiwidXNlcl9pZCI6MSwiaXNzIjoicmFqLWtleSIsImVtYWlsIjoia3VtYXJAZXhhbXBsZS5jb20ifQ.db0du5x0dSjYKMoToU-wqc-3MiGl9vhDvHD2VCtF4WSI-afZX61ni7e9msff1C2Wzr2WpDt9x90EywJEqDGtoms5sKx_I96pGvsY1tRv9Webo83NQNIWGGjbZRU_N1p0ryWga9aKKhRqO2g4iCCGjYHhqHQNKrmWJx60d_o9zhQeyzv2lPBbhA_ivmTUftenaYtBXedRTR8Kh7Rk1Oen-_tSsA8SVtoHuGsSIUgSqbH6pOW-gdW1qEh6AI7Dkr3xFFgYeW70joHpjcN5YT_94dWKIlfwy6IfHUkEpm-aMOv55Iyry2hSahvH0sM-opKjx6edGP1gSpCUtoitR8PUKA",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"product\": \"a964282d-63ee-4597-9513-343976973b8f\",\r\n  \"consumer_id\": \"3\",\r\n  \"quantity\": 2\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/ecom/products/book/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"ecom",
+								"products",
+								"book",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get_my_orders(F)",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUzMDAzOTU2LCJpYXQiOjE3NTIzOTkxNTYsImp0aSI6IjJlYTc1MDUxNzVhNjQ3MTY4MWY3YjQ1OGNkN2FkM2JmIiwidXNlcl9pZCI6MSwiaXNzIjoicmFqLWtleSIsImVtYWlsIjoia3VtYXJAZXhhbXBsZS5jb20ifQ.db0du5x0dSjYKMoToU-wqc-3MiGl9vhDvHD2VCtF4WSI-afZX61ni7e9msff1C2Wzr2WpDt9x90EywJEqDGtoms5sKx_I96pGvsY1tRv9Webo83NQNIWGGjbZRU_N1p0ryWga9aKKhRqO2g4iCCGjYHhqHQNKrmWJx60d_o9zhQeyzv2lPBbhA_ivmTUftenaYtBXedRTR8Kh7Rk1Oen-_tSsA8SVtoHuGsSIUgSqbH6pOW-gdW1qEh6AI7Dkr3xFFgYeW70joHpjcN5YT_94dWKIlfwy6IfHUkEpm-aMOv55Iyry2hSahvH0sM-opKjx6edGP1gSpCUtoitR8PUKA",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/ecom/farmer/bookings/?farmer_id=1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"ecom",
+								"farmer",
+								"bookings",
+								""
+							],
+							"query": [
+								{
+									"key": "farmer_id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get_my_products(F)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUzMDAzOTU2LCJpYXQiOjE3NTIzOTkxNTYsImp0aSI6IjJlYTc1MDUxNzVhNjQ3MTY4MWY3YjQ1OGNkN2FkM2JmIiwidXNlcl9pZCI6MSwiaXNzIjoicmFqLWtleSIsImVtYWlsIjoia3VtYXJAZXhhbXBsZS5jb20ifQ.db0du5x0dSjYKMoToU-wqc-3MiGl9vhDvHD2VCtF4WSI-afZX61ni7e9msff1C2Wzr2WpDt9x90EywJEqDGtoms5sKx_I96pGvsY1tRv9Webo83NQNIWGGjbZRU_N1p0ryWga9aKKhRqO2g4iCCGjYHhqHQNKrmWJx60d_o9zhQeyzv2lPBbhA_ivmTUftenaYtBXedRTR8Kh7Rk1Oen-_tSsA8SVtoHuGsSIUgSqbH6pOW-gdW1qEh6AI7Dkr3xFFgYeW70joHpjcN5YT_94dWKIlfwy6IfHUkEpm-aMOv55Iyry2hSahvH0sM-opKjx6edGP1gSpCUtoitR8PUKA",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5000/api/ecom/farmer/my-products/?farmer_id=1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"ecom",
+								"farmer",
+								"my-products",
+								""
+							],
+							"query": [
+								{
+									"key": "farmer_id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get_my_bookings(C)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUzMDAzOTU2LCJpYXQiOjE3NTIzOTkxNTYsImp0aSI6IjJlYTc1MDUxNzVhNjQ3MTY4MWY3YjQ1OGNkN2FkM2JmIiwidXNlcl9pZCI6MSwiaXNzIjoicmFqLWtleSIsImVtYWlsIjoia3VtYXJAZXhhbXBsZS5jb20ifQ.db0du5x0dSjYKMoToU-wqc-3MiGl9vhDvHD2VCtF4WSI-afZX61ni7e9msff1C2Wzr2WpDt9x90EywJEqDGtoms5sKx_I96pGvsY1tRv9Webo83NQNIWGGjbZRU_N1p0ryWga9aKKhRqO2g4iCCGjYHhqHQNKrmWJx60d_o9zhQeyzv2lPBbhA_ivmTUftenaYtBXedRTR8Kh7Rk1Oen-_tSsA8SVtoHuGsSIUgSqbH6pOW-gdW1qEh6AI7Dkr3xFFgYeW70joHpjcN5YT_94dWKIlfwy6IfHUkEpm-aMOv55Iyry2hSahvH0sM-opKjx6edGP1gSpCUtoitR8PUKA",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5000/api/ecom/products/view-bookings/?consumer_id=3",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"ecom",
+								"products",
+								"view-bookings",
+								""
+							],
+							"query": [
+								{
+									"key": "consumer_id",
+									"value": "3"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get_all_latest_products(C)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUzMDAzOTU2LCJpYXQiOjE3NTIzOTkxNTYsImp0aSI6IjJlYTc1MDUxNzVhNjQ3MTY4MWY3YjQ1OGNkN2FkM2JmIiwidXNlcl9pZCI6MSwiaXNzIjoicmFqLWtleSIsImVtYWlsIjoia3VtYXJAZXhhbXBsZS5jb20ifQ.db0du5x0dSjYKMoToU-wqc-3MiGl9vhDvHD2VCtF4WSI-afZX61ni7e9msff1C2Wzr2WpDt9x90EywJEqDGtoms5sKx_I96pGvsY1tRv9Webo83NQNIWGGjbZRU_N1p0ryWga9aKKhRqO2g4iCCGjYHhqHQNKrmWJx60d_o9zhQeyzv2lPBbhA_ivmTUftenaYtBXedRTR8Kh7Rk1Oen-_tSsA8SVtoHuGsSIUgSqbH6pOW-gdW1qEh6AI7Dkr3xFFgYeW70joHpjcN5YT_94dWKIlfwy6IfHUkEpm-aMOv55Iyry2hSahvH0sM-opKjx6edGP1gSpCUtoitR8PUKA",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5000/api/ecom/products/latest/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"ecom",
+								"products",
+								"latest",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "auction_service",
+			"item": [
+				{
+					"name": "open_insights",
+					"item": [
+						{
+							"name": "get_auction_by_zone",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:5000/api/auction/zone/1/latest/",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"auction",
+										"zone",
+										"1",
+										"latest",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get_price_trend",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5000/api/auction/price-trend/1/1/",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"auction",
+										"price-trend",
+										"1",
+										"1",
+										""
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "create_auction(A)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUzMDAzOTU2LCJpYXQiOjE3NTIzOTkxNTYsImp0aSI6IjJlYTc1MDUxNzVhNjQ3MTY4MWY3YjQ1OGNkN2FkM2JmIiwidXNlcl9pZCI6MSwiaXNzIjoicmFqLWtleSIsImVtYWlsIjoia3VtYXJAZXhhbXBsZS5jb20ifQ.db0du5x0dSjYKMoToU-wqc-3MiGl9vhDvHD2VCtF4WSI-afZX61ni7e9msff1C2Wzr2WpDt9x90EywJEqDGtoms5sKx_I96pGvsY1tRv9Webo83NQNIWGGjbZRU_N1p0ryWga9aKKhRqO2g4iCCGjYHhqHQNKrmWJx60d_o9zhQeyzv2lPBbhA_ivmTUftenaYtBXedRTR8Kh7Rk1Oen-_tSsA8SVtoHuGsSIUgSqbH6pOW-gdW1qEh6AI7Dkr3xFFgYeW70joHpjcN5YT_94dWKIlfwy6IfHUkEpm-aMOv55Iyry2hSahvH0sM-opKjx6edGP1gSpCUtoitR8PUKA",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"zone\": 1,\r\n  \"bidders\": {},\r\n  \"current_price\": {}\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/auction/create/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"auction",
+								"create",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get_products_in auction(F)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUzMDAzOTU2LCJpYXQiOjE3NTIzOTkxNTYsImp0aSI6IjJlYTc1MDUxNzVhNjQ3MTY4MWY3YjQ1OGNkN2FkM2JmIiwidXNlcl9pZCI6MSwiaXNzIjoicmFqLWtleSIsImVtYWlsIjoia3VtYXJAZXhhbXBsZS5jb20ifQ.db0du5x0dSjYKMoToU-wqc-3MiGl9vhDvHD2VCtF4WSI-afZX61ni7e9msff1C2Wzr2WpDt9x90EywJEqDGtoms5sKx_I96pGvsY1tRv9Webo83NQNIWGGjbZRU_N1p0ryWga9aKKhRqO2g4iCCGjYHhqHQNKrmWJx60d_o9zhQeyzv2lPBbhA_ivmTUftenaYtBXedRTR8Kh7Rk1Oen-_tSsA8SVtoHuGsSIUgSqbH6pOW-gdW1qEh6AI7Dkr3xFFgYeW70joHpjcN5YT_94dWKIlfwy6IfHUkEpm-aMOv55Iyry2hSahvH0sM-opKjx6edGP1gSpCUtoitR8PUKA",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5000/api/auction/products/<zoneId>/", 
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"auction",
+								"products",
+								"1",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "post-bid(F)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUzMDAzOTU2LCJpYXQiOjE3NTIzOTkxNTYsImp0aSI6IjJlYTc1MDUxNzVhNjQ3MTY4MWY3YjQ1OGNkN2FkM2JmIiwidXNlcl9pZCI6MSwiaXNzIjoicmFqLWtleSIsImVtYWlsIjoia3VtYXJAZXhhbXBsZS5jb20ifQ.db0du5x0dSjYKMoToU-wqc-3MiGl9vhDvHD2VCtF4WSI-afZX61ni7e9msff1C2Wzr2WpDt9x90EywJEqDGtoms5sKx_I96pGvsY1tRv9Webo83NQNIWGGjbZRU_N1p0ryWga9aKKhRqO2g4iCCGjYHhqHQNKrmWJx60d_o9zhQeyzv2lPBbhA_ivmTUftenaYtBXedRTR8Kh7Rk1Oen-_tSsA8SVtoHuGsSIUgSqbH6pOW-gdW1qEh6AI7Dkr3xFFgYeW70joHpjcN5YT_94dWKIlfwy6IfHUkEpm-aMOv55Iyry2hSahvH0sM-opKjx6edGP1gSpCUtoitR8PUKA",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"auction_id\": \"5657a1b9-b848-4c59-b7e2-559276a4125e\",\r\n  \"product_id\": 1,\r\n  \"farmer_id\": 1,\r\n  \"price\": 180.5\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/auction/place-bid/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"auction",
+								"place-bid",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "stop_auction(A)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUzMDAzOTU2LCJpYXQiOjE3NTIzOTkxNTYsImp0aSI6IjJlYTc1MDUxNzVhNjQ3MTY4MWY3YjQ1OGNkN2FkM2JmIiwidXNlcl9pZCI6MSwiaXNzIjoicmFqLWtleSIsImVtYWlsIjoia3VtYXJAZXhhbXBsZS5jb20ifQ.db0du5x0dSjYKMoToU-wqc-3MiGl9vhDvHD2VCtF4WSI-afZX61ni7e9msff1C2Wzr2WpDt9x90EywJEqDGtoms5sKx_I96pGvsY1tRv9Webo83NQNIWGGjbZRU_N1p0ryWga9aKKhRqO2g4iCCGjYHhqHQNKrmWJx60d_o9zhQeyzv2lPBbhA_ivmTUftenaYtBXedRTR8Kh7Rk1Oen-_tSsA8SVtoHuGsSIUgSqbH6pOW-gdW1qEh6AI7Dkr3xFFgYeW70joHpjcN5YT_94dWKIlfwy6IfHUkEpm-aMOv55Iyry2hSahvH0sM-opKjx6edGP1gSpCUtoitR8PUKA",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5000/api/auction/5657a1b9-b848-4c59-b7e2-559276a4125e/stop/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"auction",
+								"5657a1b9-b848-4c59-b7e2-559276a4125e",
+								"stop",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get_farmer_activity_auction(F)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUzMDAzOTU2LCJpYXQiOjE3NTIzOTkxNTYsImp0aSI6IjJlYTc1MDUxNzVhNjQ3MTY4MWY3YjQ1OGNkN2FkM2JmIiwidXNlcl9pZCI6MSwiaXNzIjoicmFqLWtleSIsImVtYWlsIjoia3VtYXJAZXhhbXBsZS5jb20ifQ.db0du5x0dSjYKMoToU-wqc-3MiGl9vhDvHD2VCtF4WSI-afZX61ni7e9msff1C2Wzr2WpDt9x90EywJEqDGtoms5sKx_I96pGvsY1tRv9Webo83NQNIWGGjbZRU_N1p0ryWga9aKKhRqO2g4iCCGjYHhqHQNKrmWJx60d_o9zhQeyzv2lPBbhA_ivmTUftenaYtBXedRTR8Kh7Rk1Oen-_tSsA8SVtoHuGsSIUgSqbH6pOW-gdW1qEh6AI7Dkr3xFFgYeW70joHpjcN5YT_94dWKIlfwy6IfHUkEpm-aMOv55Iyry2hSahvH0sM-opKjx6edGP1gSpCUtoitR8PUKA",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5000/api/auction/farmer-activity/<xoneID>/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"auction",
+								"farmer-activity",
+								"1",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

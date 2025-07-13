@@ -1,0 +1,11 @@
+[
+  {"model": "auction.product", "fields": {"name": "Foxtail Millet", "category": "millet", "intial_price": 55.0, "year": 2025}},
+  {"model": "auction.product", "fields": {"name": "Barnyard Millet", "category": "millet", "intial_price": 52.0, "year": 2025}},
+  {"model": "auction.product", "fields": {"name": "Pearl Millet", "category": "millet", "intial_price": 48.5, "year": 2025}},
+  {"model": "auction.product", "fields": {"name": "Carrot", "category": "vegetable", "intial_price": 30.0, "year": 2025}},
+  {"model": "auction.product", "fields": {"name": "Tomato", "category": "vegetable", "intial_price": 22.5, "year": 2025}},
+  {"model": "auction.product", "fields": {"name": "Potato", "category": "vegetable", "intial_price": 28.0, "year": 2025}},
+  {"model": "auction.product", "fields": {"name": "Apple", "category": "fruit", "intial_price": 90.0, "year": 2025}},
+  {"model": "auction.product", "fields": {"name": "Banana", "category": "fruit", "intial_price": 35.0, "year": 2025}},
+  {"model": "auction.product", "fields": {"name": "Mango", "category": "fruit", "intial_price": 70.0, "year": 2025}}
+]

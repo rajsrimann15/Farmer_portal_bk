@@ -1,0 +1,42 @@
+[
+    {
+        "Zone":"Zone 1",
+        "Districts":"Coimbatore, Erode, Tiruppur, Nilgiris, Salem, Namakkal"
+    },
+    {
+        "Zone":"Zone 2",
+        "Districts":"Chennai, Kanchipuram, Chengalpattu, Tiruvallur, Vellore, Ranipet"
+    },
+    {
+        "Zone":"Zone 3",
+        "Districts":"Madurai, Theni, Dindigul, Sivaganga, Virudhunagar"
+    },
+    {
+        "Zone":"Zone 4",
+        "Districts":"Trichy, Karur, Perambalur, Ariyalur, Pudukkottai"
+    },
+    {
+        "Zone":"Zone 5",
+        "Districts":"Tirunelveli, Thoothukudi, Tenkasi, Kanyakumari"
+    },
+    {
+        "Zone":"Zone 6",
+        "Districts":"Thanjavur, Nagapattinam, Tiruvarur, Cuddalore"
+    },
+    {
+        "Zone":"Zone 7",
+        "Districts":"Dharmapuri, Krishnagiri, Tirupattur"
+    },
+    {
+        "Zone":"Zone 8",
+        "Districts":"Villupuram, Kallakurichi"
+    },
+    {
+        "Zone":"Zone 9",
+        "Districts":"Ramanathapuram, Nagapattinam"
+    },
+    {
+        "Zone":"Zone 10",
+        "Districts":"Mayiladuthurai"
+    }
+]

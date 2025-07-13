@@ -6,6 +6,7 @@ from users.models import Farmer, Consumer, Transporter
 from users.serializers import FarmerSerializer, ConsumerSerializer, TransporterSerializer
 from rest_framework.response import Response
 from django.contrib.auth.hashers import check_password
+from django.http import JsonResponse
 
 # Function to generate JWT tokens 
 def get_token(user):
@@ -51,10 +52,10 @@ class farmer_login(APIView):
         
         #exception handling
         if not check_password(password,farmer.password):
-            return Response({"error": "Invalid credentials"}, status=400)
+            return JsonResponse({"error": "Invalid credentials"}, status=400)
         
         token= get_token(farmer)
-        return Response(token, status= 200)
+        return JsonResponse(token, status= 200)
 
 class consumer_login(APIView):
     def post(self, request):

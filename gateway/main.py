@@ -1,3 +1,4 @@
+import json
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse, Response
 import httpx
@@ -26,32 +27,73 @@ def is_public_auction_path(path: str) -> bool:
 @app.api_route("/api/users/{path:path}", methods=["GET", "POST", "PUT", "DELETE"])
 async def proxy_user_service(path: str, request: Request):
     async with httpx.AsyncClient() as client:
-        body = await request.body()
-        url = f"{USER_SERVICE}/api/users/{path}"
-        headers = dict(request.headers)
-        headers.pop("host", None)
-        headers.setdefault("User-Agent", "Mozilla/5.0")
-
-        method = request.method.lower()
-        response = await client.request(method, url, headers=headers, content=body)
-
-        content_type = response.headers.get("content-type", "")
         try:
+            # Prepare the request
+            body = await request.body()
+            url = f"{USER_SERVICE}/api/users/{path}"
+            headers = {
+                k: v for k, v in request.headers.items() 
+                if k.lower() not in ["host", "content-length"]
+            }
+            headers.setdefault("User-Agent", "API-Gateway/1.0")
+
+            # Forward the request
+            response = await client.request(
+                request.method.lower(),
+                url,
+                headers=headers,
+                content=body,
+                timeout=30.0  # Important timeout
+            )
+
+            # Process the response
+            content_type = response.headers.get("content-type", "").lower()
+            
+            # Debug logging (optional)
+            print(f"Proxied to {url} | Status: {response.status_code} | Type: {content_type}")
+
+            # Handle JSON responses
             if "application/json" in content_type:
-                return JSONResponse(content=response.json(), status_code=response.status_code)
-            else:
-                # Fall back to raw response
-                return Response(
-                    content=response.content,
-                    status_code=response.status_code,
-                    media_type=content_type or "application/octet-stream"
-                )
-        except Exception as e:
-            print("⚠️ Error parsing JSON:", e)
+                try:
+                    return JSONResponse(
+                        content=response.json(),
+                        status_code=response.status_code,
+                        headers=dict(response.headers)
+                    )
+                except (json.JSONDecodeError, UnicodeDecodeError) as e:
+                    print(f"JSON parse error: {e} | Response: {response.text[:200]}...")
+                    # Fallback to raw response if JSON parsing fails
+                    return Response(
+                        content=response.content,
+                        status_code=response.status_code,
+                        media_type=content_type,
+                        headers=dict(response.headers)
+                    )
+
+            # Handle all other response types
             return Response(
                 content=response.content,
                 status_code=response.status_code,
-                media_type=content_type or "application/octet-stream"
+                media_type=content_type or "application/octet-stream",
+                headers=dict(response.headers)
+            )
+
+        except httpx.TimeoutException:
+            return JSONResponse(
+                content={"error": "Upstream service timeout"},
+                status_code=504
+            )
+        except httpx.RequestError as e:
+            print(f"Request error: {str(e)}")
+            return JSONResponse(
+                content={"error": f"Upstream connection error: {str(e)}"},
+                status_code=502
+            )
+        except Exception as e:
+            print(f"Unexpected error: {str(e)}")
+            return JSONResponse(
+                content={"error": "Internal gateway error"},
+                status_code=500
             )
 
 

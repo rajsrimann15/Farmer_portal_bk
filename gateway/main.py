@@ -52,24 +52,6 @@ async def proxy_user_service(path: str, request: Request):
             # Debug logging (optional)
             print(f"Proxied to {url} | Status: {response.status_code} | Type: {content_type}")
 
-            # Handle JSON responses
-            if "application/json" in content_type:
-                try:
-                    return JSONResponse(
-                        content=response.json(),
-                        status_code=response.status_code,
-                        headers=dict(response.headers)
-                    )
-                except (json.JSONDecodeError, UnicodeDecodeError) as e:
-                    print(f"JSON parse error: {e} | Response: {response.text[:200]}...")
-                    # Fallback to raw response if JSON parsing fails
-                    return Response(
-                        content=response.content,
-                        status_code=response.status_code,
-                        media_type=content_type,
-                        headers=dict(response.headers)
-                    )
-
             # Handle all other response types
             return Response(
                 content=response.content,
@@ -95,7 +77,6 @@ async def proxy_user_service(path: str, request: Request):
                 content={"error": "Internal gateway error"},
                 status_code=500
             )
-
 
 
 # ---------- TRANSPORT SERVICE PROXY (JWT Required) ----------

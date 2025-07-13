@@ -27,17 +27,17 @@ async def proxy_user_service(path: str, request: Request):
         body = await request.body()
         url = f"{USER_SERVICE}/api/users/{path}"
         headers = dict(request.headers)
+        headers.setdefault("User-Agent", "Mozilla/5.0")  # Helps with Cloudflare
+
         method = request.method.lower()
         response = await client.request(method, url, headers=headers, content=body)
-        try:
-            return response.json()
-        except Exception:
-            return Response(
-                content=response.content,
-                status_code=response.status_code,
-                headers=dict(response.headers)
-            )
 
+        return Response(
+            content=response.content,
+            status_code=response.status_code,
+            headers={"content-type": response.headers.get("content-type", "application/json")}
+        )
+    
 # ---------- TRANSPORT SERVICE PROXY (JWT Required) ----------
 @app.api_route("/api/transport/{path:path}", methods=["GET", "POST", "PUT", "DELETE"])
 async def proxy_transport_service(path: str, request: Request):

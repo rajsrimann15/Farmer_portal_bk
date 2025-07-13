@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-7%(xss9%=35*er!p!+t_yfc-ce%xe&y+_526!e2%1_h&id_bm!
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['farmer-portal-auction-service.onrender.com']
 
 
 # Application definition

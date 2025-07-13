@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException, Request
+from fastapi.responses import Response
 import httpx
 from jwt_utils import verify_jwt_token
 from decouple import config
@@ -30,7 +31,12 @@ async def proxy_user_service(path: str, request: Request):
         headers = dict(request.headers)
         method = request.method.lower()
         response = await client.request(method, url, headers=headers, content=body)
-        return response.json()
+
+        return Response(
+            content=response.content,
+            status_code=response.status_code,
+            headers=dict(response.headers)
+        )
 
 
 # ---------- TRANSPORT SERVICE PROXY (JWT Required) ----------
@@ -52,13 +58,17 @@ async def proxy_transport_service(path: str, request: Request):
 
         method = request.method.lower()
         response = await client.request(method, url, headers=headers, content=body)
-        return response.json()
+
+        return Response(
+            content=response.content,
+            status_code=response.status_code,
+            headers=dict(response.headers)
+        )
 
 
 # ---------- AUCTION SERVICE PROXY (Some Routes Open) ----------
 @app.api_route("/api/auction/{path:path}", methods=["GET", "POST", "PUT", "DELETE"])
 async def proxy_auction_service(path: str, request: Request):
-    # Only protect routes that are NOT public
     if not is_public_auction_path(path):
         auth = request.headers.get("Authorization")
         if not auth or not auth.startswith("Bearer "):
@@ -76,7 +86,12 @@ async def proxy_auction_service(path: str, request: Request):
 
         method = request.method.lower()
         response = await client.request(method, url, headers=headers, content=body)
-        return response.json()
+
+        return Response(
+            content=response.content,
+            status_code=response.status_code,
+            headers=dict(response.headers)
+        )
 
 
 # ---------- ECOM SERVICE PROXY (JWT Required) ----------
@@ -98,4 +113,9 @@ async def proxy_ecom_service(path: str, request: Request):
 
         method = request.method.lower()
         response = await client.request(method, url, headers=headers, content=body)
-        return response.json()
+
+        return Response(
+            content=response.content,
+            status_code=response.status_code,
+            headers=dict(response.headers)
+        )

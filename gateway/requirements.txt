@@ -1,10 +1,5 @@
-Django>=4.0
-gunicorn
-psycopg2-binary
-dj-database-url
-djangorestframework
-djangorestframework-simplejwt
+fastapi
+uvicorn
+httpx
+python-jose
 python-decouple
-cryptography
-requests
-django-cors-headers

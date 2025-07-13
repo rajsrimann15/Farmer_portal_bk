@@ -219,6 +219,7 @@ async def proxy_ecom_service(path: str, request: Request):
 
 
 # ---------- AUCTION SERVICE PROXY ------------
+@app.api_route("/api/auction/{path:path}", methods=["GET", "POST", "PUT", "DELETE"])
 async def proxy_auction_service(path: str, request: Request):
     if not is_public_auction_path(path):
         auth = request.headers.get("Authorization")

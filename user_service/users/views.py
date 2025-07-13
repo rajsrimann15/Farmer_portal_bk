@@ -52,10 +52,10 @@ class farmer_login(APIView):
         
         #exception handling
         if not check_password(password,farmer.password):
-            return JsonResponse({"error": "Invalid credentials"}, status=400)
+            return Response({"error": "Invalid credentials"}, status=400)
         
         token= get_token(farmer)
-        return JsonResponse(token, status= 200)
+        return Response(token, status= 200)
 
 class consumer_login(APIView):
     def post(self, request):

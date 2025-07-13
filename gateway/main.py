@@ -28,34 +28,31 @@ async def proxy_user_service(path: str, request: Request):
     async with httpx.AsyncClient() as client:
         body = await request.body()
         url = f"{USER_SERVICE}/api/users/{path}"
-
         headers = dict(request.headers)
-        headers.setdefault("User-Agent", "Mozilla/5.0")
-        headers.setdefault("Accept", "*/*")
         headers.pop("host", None)
+        headers.setdefault("User-Agent", "Mozilla/5.0")
 
         method = request.method.lower()
-        print(f"➡️ Forwarding {method.upper()} to: {url}")
+        response = await client.request(method, url, headers=headers, content=body)
 
+        content_type = response.headers.get("content-type", "")
         try:
-            response = await client.request(method, url, headers=headers, content=body)
-
-            # 🔍 Debug here
-            print("🔍 Response content-type:", response.headers.get("content-type"))
-            print("📦 Raw content preview:", repr(response.content[:100]))
-
-            content_type = response.headers.get("content-type", "").lower()
             if "application/json" in content_type:
                 return JSONResponse(content=response.json(), status_code=response.status_code)
             else:
+                # Fall back to raw response
                 return Response(
                     content=response.content,
                     status_code=response.status_code,
-                    headers={"content-type": content_type or "application/octet-stream"}
+                    media_type=content_type or "application/octet-stream"
                 )
         except Exception as e:
-            print("❌ Error occurred:", e)
-            return JSONResponse({"detail": "Internal proxy error"}, status_code=500)
+            print("⚠️ Error parsing JSON:", e)
+            return Response(
+                content=response.content,
+                status_code=response.status_code,
+                media_type=content_type or "application/octet-stream"
+            )
 
 
 

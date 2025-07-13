@@ -26,46 +26,33 @@ def is_public_auction_path(path: str) -> bool:
 @app.api_route("/api/users/{path:path}", methods=["GET", "POST", "PUT", "DELETE"])
 async def proxy_user_service(path: str, request: Request):
     async with httpx.AsyncClient() as client:
-        # Forwarded request setup
         body = await request.body()
         url = f"{USER_SERVICE}/api/users/{path}"
 
         headers = dict(request.headers)
         headers.setdefault("User-Agent", "Mozilla/5.0")
         headers.setdefault("Accept", "*/*")
-        headers.pop("host", None)  # Remove problematic header if present
+        headers.pop("host", None)
 
         method = request.method.lower()
-
-        # Optional debug
         print(f"➡️ Forwarding {method.upper()} to: {url}")
 
         try:
             response = await client.request(method, url, headers=headers, content=body)
 
-            # Try parsing as JSON if content type is JSON
-            if "application/json" in response.headers.get("content-type", ""):
-                return JSONResponse(
-                    content=response.json(),
-                    status_code=response.status_code
-                )
+            content_type = response.headers.get("content-type", "")
+            if "application/json" in content_type:
+                return JSONResponse(content=response.json(), status_code=response.status_code)
             else:
-                # Forward non-JSON content (binary, HTML, etc.)
                 return Response(
                     content=response.content,
                     status_code=response.status_code,
-                    headers={
-                        "content-type": response.headers.get(
-                            "content-type", "application/octet-stream"
-                        )
-                    }
+                    headers={"content-type": content_type or "application/octet-stream"}
                 )
         except httpx.RequestError as exc:
-            print("❌ Request to user service failed:", exc)
-            return JSONResponse(
-                {"detail": "User service is unreachable."},
-                status_code=502
-            )
+            print("Request failed:", exc)
+            return JSONResponse({"detail": "User service unreachable."}, status_code=502)
+
 
 # ---------- TRANSPORT SERVICE PROXY (JWT Required) ----------
 @app.api_route("/api/transport/{path:path}", methods=["GET", "POST", "PUT", "DELETE"])

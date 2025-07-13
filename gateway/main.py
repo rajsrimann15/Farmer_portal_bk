@@ -1,4 +1,5 @@
-from fastapi import FastAPI, HTTPException, Request, Response
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.responses import JSONResponse, Response
 import httpx
 from jwt_utils import verify_jwt_token
 from decouple import config
@@ -6,7 +7,7 @@ from decouple import config
 app = FastAPI()
 
 # Service endpoints
-USER_SERVICE = config('USER_SERVICE')
+USER_SERVICE = 'https://farmer-portal-user-service.onrender.com'
 TRANSPORT_SERVICE = config('TRANSPORT_SERVICE')
 ECOM_SERVICE = config('ECOM_SERVICE')
 AUCTION_SERVICE = config('AUCTION_SERVICE')
@@ -27,18 +28,24 @@ async def proxy_user_service(path: str, request: Request):
     async with httpx.AsyncClient() as client:
         body = await request.body()
         url = f"{USER_SERVICE}/api/users/{path}"
+
         headers = dict(request.headers)
-        headers.setdefault("User-Agent", "Mozilla/5.0")  # Helps with Cloudflare
+        # 👉 Inject browser-style headers
+        headers.setdefault("User-Agent", "Mozilla/5.0")
+        headers.setdefault("Accept", "*/*")
+        headers.pop("host", None)  # optional: Cloudflare may block 'Host: localhost'
 
         method = request.method.lower()
         response = await client.request(method, url, headers=headers, content=body)
 
-        return Response(
-            content=response.content,
-            status_code=response.status_code,
-            headers={"content-type": response.headers.get("content-type", "application/json")}
-        )
-    
+        try:
+            return JSONResponse(content=response.json(), status_code=response.status_code)
+        except Exception:
+            return Response(
+                content=response.content,
+                status_code=response.status_code,
+                headers={"content-type": response.headers.get("content-type", "application/json")}
+            )
 # ---------- TRANSPORT SERVICE PROXY (JWT Required) ----------
 @app.api_route("/api/transport/{path:path}", methods=["GET", "POST", "PUT", "DELETE"])
 async def proxy_transport_service(path: str, request: Request):

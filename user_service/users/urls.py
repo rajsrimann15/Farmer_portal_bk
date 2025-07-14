@@ -13,7 +13,7 @@ from .views import (
 
 urlpatterns = [
 
-    path('health/', HealthCheckView.as_view(), name='health_check'),
+    path('health/', HealthCheckView.as_view(), name='health-check'),
     path('farmer/register/', farmer_register.as_view()),
     path('consumer/register/', consumer_register.as_view()),
     path('transporter/register/', transporter_register.as_view()),

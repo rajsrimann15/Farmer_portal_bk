@@ -4,6 +4,12 @@ from rest_framework.views import APIView
 from rest_framework.exceptions import ValidationError
 from .models import Product, Booking
 from .serializers import ProductSerializer, BookingSerializer
+from rest_framework import status
+
+#HealthCheckView
+class HealthCheckView(APIView):
+    def get(self, request):
+        return Response({'status': 'ecom_service is live'}, status=status.HTTP_200_OK)
 
 # Farmer - Create Product
 class ProductCreateView(generics.CreateAPIView):

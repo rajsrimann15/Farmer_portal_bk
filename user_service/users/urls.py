@@ -8,9 +8,12 @@ from .views import (
     consumer_login,
     transporter_login,
     TokenRefreshView,
+    HealthCheckView
 )
 
 urlpatterns = [
+
+    path('health/', HealthCheckView.as_view(), name='health_check'),
     path('farmer/register/', farmer_register.as_view()),
     path('consumer/register/', consumer_register.as_view()),
     path('transporter/register/', transporter_register.as_view()),

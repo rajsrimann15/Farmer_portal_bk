@@ -9,6 +9,11 @@ from .models import Auction, Product, StagingBid
 from .serializers import AuctionSerializer, PlaceBidSerializer, ProductSerializer
 from rest_framework import status
 
+#HealthCheckView
+class HealthCheckView(APIView):
+    def get(self, request):
+        return Response({'status': 'AUction_service is live'}, status=status.HTTP_200_OK)
+
 # CreateAuctionView
 class CreateAuctionView(generics.CreateAPIView):
     queryset = Auction.objects.all()

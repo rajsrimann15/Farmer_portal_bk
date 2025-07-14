@@ -5,6 +5,13 @@ from .models import TransportSchedule, RoutePoint, Segment, Booking
 from .serializers import TransportScheduleSerializer, BookingSerializer
 from datetime import datetime
 from django.shortcuts import get_object_or_404
+from rest_framework.views import APIView
+
+
+#HealthCheckView
+class HealthCheckView(APIView):
+    def get(self, request):
+        return Response({'status': 'transport_service is live'}, status=status.HTTP_200_OK)
 
 # Create a schedule  
 class CreateScheduleView(generics.CreateAPIView):

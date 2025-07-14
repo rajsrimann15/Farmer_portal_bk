@@ -1,8 +1,11 @@
 from django.urls import path
 from . import views
-from .views import AuctionDetailView, CreateAuctionView, LatestAuctionByZoneView, PlaceBidView, ProductByZoneView, ProductPriceTrendView, StopAuctionView, FarmerActivityView
+from .views import AuctionDetailView, CreateAuctionView, LatestAuctionByZoneView, PlaceBidView, ProductByZoneView, ProductPriceTrendView, StopAuctionView, FarmerActivityView, HealthCheckView
 
 urlpatterns = [
+    
+   path('health/', HealthCheckView.as_view(), name='health-check'),
+
    path('create/', CreateAuctionView.as_view(), name='create-auction'),
    path('products/<int:zone_id>/', ProductByZoneView.as_view(), name='products-by-zone'),
    path('place-bid/', PlaceBidView.as_view()),

@@ -7,9 +7,12 @@ from .views import (
     FarmerProductsView,
     ConsumerBookingsView,
     LatestProductsView,
+    HealthCheckView
 )
 
 urlpatterns = [
+    path('health/', HealthCheckView.as_view(), name='health-check'),
+
     path('products/', ProductListView.as_view()),
     path('products/book/', BookProductView.as_view()),
     path('products/view-bookings/', ConsumerBookingsView.as_view()),

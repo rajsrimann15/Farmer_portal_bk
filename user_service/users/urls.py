@@ -8,7 +8,7 @@ from .views import (
     consumer_login,
     transporter_login,
     TokenRefreshView,
-    HealthCheckView
+    HealthCheckView,
 )
 
 urlpatterns = [

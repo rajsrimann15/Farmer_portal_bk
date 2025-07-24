@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-w+b+pqyxffm=d4v&8k@lu9)_-e#i^*$=v_6y4q3204*05+mu49
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0','farmer-portal-user-service.onrender.com','farmer-portal-gateway.onrender.com']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0','farmer-portal-user-service.onrender.com','farmer-portal-gateway.onrender.com', "*"]
 
 
 # Application definition

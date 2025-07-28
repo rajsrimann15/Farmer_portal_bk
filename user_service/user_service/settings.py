@@ -153,6 +153,8 @@ SIMPLE_JWT = {
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",  # your React frontend
     "http://127.0.0.1:5173",
+    'https://farmer-portal-gateway.onrender.com',
+    
 ]
 
 # If you're using cookies or Authorization header in fetch(), add:

@@ -24,7 +24,6 @@ def is_public_auction_path(path: str) -> bool:
     return any(path.startswith(p.strip("/")) for p in PUBLIC_AUCTION_ENDPOINTS)
 
 
-
 # ---------- USER SERVICE PROXY ----------
 @app.api_route("/api/users/{path:path}", methods=["GET", "POST", "PUT", "DELETE"])
 async def proxy_user_service(path: str, request: Request):

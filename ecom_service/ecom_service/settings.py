@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-9cz^qqzg9s@!scx9&ibztfclj6jlye2t_tlo*7%c#z!1=*%1bf
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0','farmer-portal-ecom-service.onrender.com']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0','farmer-portal-ecom-service.onrender.com', 'farmer-portal-gateway.onrender.com', "*"]
 
 
 # Application definition
@@ -42,6 +42,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -127,3 +128,15 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# CORS settings
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",  # your React frontend
+    "http://127.0.0.1:5173",
+    'https://farmer-portal-gateway.onrender.com',
+    
+]
+
+# If you're using cookies or Authorization header in fetch(), add:
+CORS_ALLOW_CREDENTIALS = True

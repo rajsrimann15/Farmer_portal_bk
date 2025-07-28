@@ -4,8 +4,17 @@ from fastapi.responses import JSONResponse, Response
 import httpx
 from jwt_utils import verify_jwt_token
 from decouple import config
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],  # Or ["*"] for dev only
+    allow_credentials=True,
+    allow_methods=["*"],  # Allow all HTTP methods
+    allow_headers=["*"],  # Allow all headers (Authorization, Content-Type, etc.)
+)
 
 # Service endpoints
 USER_SERVICE = config('USER_SERVICE')

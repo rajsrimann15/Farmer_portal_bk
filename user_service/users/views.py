@@ -54,41 +54,44 @@ class farmer_login(APIView):
     def post(self, request):
         phone_number = request.data.get('phone_number')
         password = request.data.get('password')
+        
         farmer= get_object_or_404(Farmer, phone_number=phone_number)
+        id=farmer.id
         
         #exception handling
         if not check_password(password,farmer.password):
             return Response({"error": "Invalid credentials"}, status=400)
         
         token= get_token(farmer)
-        return Response(token, status= 200)
+        return Response({'access': token['access'],'refresh': token['refresh'], 'id': id}, status=200)
 
 class consumer_login(APIView):
     def post(self, request):
         email = request.data.get('email')
         password = request.data.get('password')
         consumer = get_object_or_404(Consumer, email=email)
+        id= consumer.id
         
         # exception handling
         if not check_password(password, consumer.password):
             return Response({"error": "Invalid credentials"}, status=400)
         
         token = get_token(consumer)
-        return Response(token, status=200)
+        return Response({'access': token['access'],'refresh': token['refresh'], 'id': id}, status=200)
 
 class transporter_login(APIView):
     def post(self, request):
         email= request.data.get('email')
         password = request.data.get('password')
         transporter = get_object_or_404(Transporter, email=email)
+        id= transporter.transporter_id
         
         # exception handling
         if not check_password(password, transporter.password):
             return Response({"error": "Invalid credentials"}, status=400)
         
         token = get_token(transporter)
-        return Response(token, status=200)
-    
+        return Response({'access': token['access'],'refresh': token['refresh'], 'id': id}, status=200)
 
 #Refresh token view 
 class TokenRefreshView(APIView):

@@ -84,7 +84,7 @@ class transporter_login(APIView):
         email= request.data.get('email')
         password = request.data.get('password')
         transporter = get_object_or_404(Transporter, email=email)
-        id= transporter.transporter_id
+        id= transporter.id
         
         # exception handling
         if not check_password(password, transporter.password):

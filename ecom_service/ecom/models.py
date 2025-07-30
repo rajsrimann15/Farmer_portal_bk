@@ -3,6 +3,7 @@ import uuid
 
 class Product(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)  # Generated locally
+    image_id = models.URLField(null=True, blank=True)  
     farmer_id = models.CharField(max_length=100)  # Provided by frontend (from user_service)
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True)
@@ -23,3 +24,6 @@ class Booking(models.Model):
 
     def __str__(self):
         return f"Booking {self.id} - Product {self.product.name} by Consumer {self.consumer_id}"
+
+
+

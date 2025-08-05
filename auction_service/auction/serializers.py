@@ -5,7 +5,7 @@ from .models import Auction, Product
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = ['id', 'name', 'category', 'zone']
+        fields = ['id', 'name', 'category', 'zone', 'image_url']
 
 
 class AuctionSerializer(serializers.ModelSerializer):

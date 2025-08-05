@@ -12,7 +12,7 @@ from rest_framework import status
 #HealthCheckView
 class HealthCheckView(APIView):
     def get(self, request):
-        return Response({'status': 'AUction_service is live'}, status=status.HTTP_200_OK)
+        return Response({'status': 'Auction_service is live'}, status=status.HTTP_200_OK)
 
 # CreateAuctionView
 class CreateAuctionView(generics.CreateAPIView):

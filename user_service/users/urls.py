@@ -9,6 +9,7 @@ from .views import (
     transporter_login,
     TokenRefreshView,
     HealthCheckView,
+    GetZoneIdView,
 )
 
 urlpatterns = [
@@ -22,5 +23,6 @@ urlpatterns = [
     path('consumer/login/', consumer_login.as_view()),
     path('transporter/login/', transporter_login.as_view()),
 
-    path('token/refresh/', TokenRefreshView.as_view())
+    path('token/refresh/', TokenRefreshView.as_view()),
+    path('get_zone_id/<int:user_id>/', GetZoneIdView.as_view(), name='get-zone-id')
 ]

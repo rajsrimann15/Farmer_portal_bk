@@ -141,6 +141,16 @@ class TokenRefreshView(APIView):
             return Response({"error": "Invalid or expired refresh token"}, status=401)
         except (Farmer.DoesNotExist, Transporter.DoesNotExist, Consumer.DoesNotExist):
             return Response({"error": "User not found"}, status=404)
+    
+#get_zone_id
+class GetZoneIdView(APIView):
+    def get(self, request, user_id):
+        try:
+            farmer = Farmer.objects.get(id=user_id)
+            zone_id = farmer.zone
+            return Response({'zone_id': zone_id}, status=status.HTTP_200_OK)
+        except Farmer.DoesNotExist:
+            return Response({'error': 'Farmer not found'}, status=status.HTTP_404_NOT_FOUND)
 
         
     

@@ -3,7 +3,7 @@ from rest_framework import generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.generics import RetrieveAPIView
-
+from datetime import datetime
 
 from .models import Auction, Product, StagingBid
 from .serializers import AuctionSerializer, PlaceBidSerializer, ProductSerializer
@@ -258,3 +258,44 @@ class FarmerActivityView(APIView):
             })
 
         return Response(activity_data, status=status.HTTP_200_OK)
+
+
+#aucction_details_by_Date and Zone
+class AuctionDetailsByDateAndZoneView(APIView):
+    def get(self, request, date, zone_id):
+        try:
+            auction_date = datetime.strptime(date, '%Y-%m-%d').date()
+        except ValueError:
+            return Response({'error': 'Invalid date format. Use YYYY-MM-DD.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        latest_auction = Auction.objects.filter(
+            created_at__date=auction_date,
+            zone=zone_id
+        ).order_by('-created_at').first()
+
+        if not latest_auction:
+            return Response({'message': 'No auctions found for this date and zone'}, status=status.HTTP_404_NOT_FOUND)
+
+        current_price_map = latest_auction.current_price
+
+        product_ids = current_price_map.keys()
+        products = Product.objects.filter(id__in=product_ids)
+        product_id_to_name = {str(product.id): product.name for product in products}
+
+        product_prices = [
+            {
+                "product_id": pid,
+                "name": product_id_to_name.get(str(pid), "Unknown Product"),
+                "category": products.get(id=pid).category if products.filter(id=pid).exists() else "Unknown Category",
+                "price": price,
+                "image_url": products.get(id=pid).image_url if products.filter(id=pid).exists() else None
+            }
+            for pid, price in current_price_map.items()
+        ]
+
+        return Response({
+            "auction_id": str(latest_auction.auction_id),
+            "zone": latest_auction.zone,
+            "date": latest_auction.created_at.date(),
+            "products": product_prices
+        }, status=status.HTTP_200_OK)

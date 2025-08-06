@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-from .views import AuctionDetailView, CreateAuctionView, LatestAuctionByZoneView, PlaceBidView, ProductByZoneView, ProductPriceTrendView, StopAuctionView, FarmerActivityView, HealthCheckView
+from .views import AuctionDetailView, CreateAuctionView, LatestAuctionByZoneView, PlaceBidView, ProductByZoneView, ProductPriceTrendView, StopAuctionView, FarmerActivityView, HealthCheckView , AuctionDetailsByDateAndZoneView
 
 urlpatterns = [
     
@@ -16,6 +16,8 @@ urlpatterns = [
    path('price-trend/<int:zone_id>/<str:product_identifier>/', ProductPriceTrendView.as_view()),
 
    path('farmer-activity/<int:farmer_id>/', FarmerActivityView.as_view(), name='farmer-activity'),
+
+   path('<str:date>/<int:zone_id>/', AuctionDetailsByDateAndZoneView.as_view(), name='auction-details-by-date-and-zone'),
    
 ]
 

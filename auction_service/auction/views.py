@@ -177,7 +177,9 @@ class LatestAuctionByZoneView(APIView):
                     'product_id': product.id,
                     'name': product.name,
                     'category': product.category,
-                    'price': price
+                    'price': price,
+                    'image_url': product.image_url,
+
                 })
             except Product.DoesNotExist:
                 continue
@@ -217,7 +219,7 @@ class ProductPriceTrendView(APIView):
             {
                 "product": product.name,
                 "date": format(auction.created_at),
-                "price": auction.current_price[product_id]
+                "price": auction.current_price[product_id]   
             }
             for auction in auctions
         ]

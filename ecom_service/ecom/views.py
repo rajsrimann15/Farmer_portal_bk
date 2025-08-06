@@ -5,6 +5,15 @@ from rest_framework.exceptions import ValidationError
 from .models import Product, Booking
 from .serializers import ProductSerializer, BookingSerializer
 from rest_framework import status
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.conf import settings
+from imagekitio import ImageKit
+import time
+import hashlib
+import hmac
+import base64
+import uuid
 
 #HealthCheckView
 class HealthCheckView(APIView):
@@ -86,5 +95,36 @@ class LatestProductsView(generics.ListAPIView):
     serializer_class = ProductSerializer
 
     def get_queryset(self):
-        return Product.objects.order_by('-created_at')[:10]  
+        return Product.objects.order_by('-created_at')[:10]
+
+
+@csrf_exempt
+def generate_upload_token(request):
+    # Set expiry time (e.g. 10 minutes from now)
+    expire = int(time.time()) + 600  # 10 min token
+
+    # Unique token for each session
+    token = str(uuid.uuid4())
+
+    # Signature creation
+    private_key = settings.IMAGEKIT_PRIVATE_KEY
+    signature_data = f"token={token}&expire={expire}"
+
+    signature = hmac.new(
+        private_key.encode("utf-8"),
+        signature_data.encode("utf-8"),
+        hashlib.sha1
+    ).hexdigest()
+
+    return JsonResponse({
+        "token": token,
+        "expire": expire,
+        "signature": signature,
+        "publicKey": settings.IMAGEKIT_PUBLIC_KEY
+    })
+
+
+
+
+  
     

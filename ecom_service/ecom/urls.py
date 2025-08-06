@@ -7,7 +7,8 @@ from .views import (
     FarmerProductsView,
     ConsumerBookingsView,
     LatestProductsView,
-    HealthCheckView
+    HealthCheckView,
+    generate_upload_token,
 )
 
 urlpatterns = [
@@ -21,4 +22,6 @@ urlpatterns = [
     path('farmer/post-product/', ProductCreateView.as_view()),
     path('farmer/bookings/', FarmerBookingsView.as_view()),
     path('farmer/my-products/', FarmerProductsView.as_view()),
+    
+    path('farmer/get-token/', generate_upload_token, name='upload_image'),
 ]

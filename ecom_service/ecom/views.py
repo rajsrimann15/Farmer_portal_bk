@@ -113,7 +113,7 @@ def generate_upload_token(request):
     signature = hmac.new(
         private_key.encode("utf-8"),
         signature_data.encode("utf-8"),
-        hashlib.sha1
+        hashlib.sha256
     ).hexdigest()
 
     return JsonResponse({

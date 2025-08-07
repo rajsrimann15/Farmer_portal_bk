@@ -18,6 +18,5 @@ urlpatterns = [
    path('farmer-activity/<int:farmer_id>/', FarmerActivityView.as_view(), name='farmer-activity'),
 
    path('by-date/<str:date>/<int:zone_id>/', AuctionDetailsByDateAndZoneView.as_view(), name='auction-details-by-date-and-zone'),
-   
 ]
 

@@ -2,7 +2,7 @@
 from rest_framework import generics, status
 from rest_framework.response import Response
 
-from .permissions import IsTransporter
+from .permissions import IsConsumer, IsFarmer, IsTransporter
 from .models import TransportSchedule, RoutePoint, Segment, Booking
 from .serializers import TransportScheduleSerializer, BookingSerializer
 from datetime import datetime
@@ -28,6 +28,7 @@ class CreateScheduleView(generics.CreateAPIView):
 # List all available schedules
 class ListAvailableSchedules(generics.ListAPIView):
     serializer_class = TransportScheduleSerializer
+    permission_classes = [IsFarmer]
 
     def get_queryset(self):
         from_place = self.request.query_params.get('from_place')
@@ -100,6 +101,7 @@ class ListAvailableSchedules(generics.ListAPIView):
 # Book a schedule
 class BookScheduleView(generics.CreateAPIView):
     serializer_class = BookingSerializer
+    permission_classes = [IsFarmer]
 
     def create(self, request, *args, **kwargs):
         data = request.data
@@ -168,7 +170,9 @@ class BookScheduleView(generics.CreateAPIView):
         # Create booking
         serializer = self.get_serializer(data=data)
         serializer.is_valid(raise_exception=True)
-        serializer.save()
+        farmer_id = request.headers.get("X-User-Id")
+
+        serializer.save(farmer_id=farmer_id)
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
@@ -176,9 +180,10 @@ class BookScheduleView(generics.CreateAPIView):
 # List bookings for a transporter
 class ListTransporterBookings(generics.ListAPIView):
     serializer_class = BookingSerializer
+    permission_classes = [IsTransporter]
 
     def get_queryset(self):
-        transporter_id = self.request.query_params.get("transporter_id")
+        transporter_id = self.request.headers.get("X-User-Id")
         if not transporter_id:
             return Booking.objects.none()
 
@@ -219,9 +224,10 @@ class ListTransporterBookings(generics.ListAPIView):
 #List bookings for the farmer
 class ListFarmerBookings(generics.ListAPIView):
     serializer_class = BookingSerializer
+    permission_classes = [IsFarmer]
 
     def get_queryset(self):
-        farmer_id = self.request.query_params.get("farmer_id")
+        farmer_id = self.request.headers.get("X-User-Id")
         if not farmer_id:
             return Booking.objects.none()
 

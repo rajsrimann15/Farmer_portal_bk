@@ -6,6 +6,7 @@ from jwt_utils import verify_jwt_token
 from decouple import config
 from fastapi.middleware.cors import CORSMiddleware
 
+
 app = FastAPI()
 
 app.add_middleware(
@@ -110,25 +111,41 @@ async def proxy_user_service(path: str, request: Request):
 # ---------- TRANSPORT SERVICE PROXY (JWT Required) ----------
 @app.api_route("/api/transport/{path:path}", methods=["GET", "POST", "PUT", "DELETE"])
 async def proxy_transport_service(path: str, request: Request):
+    # 1. Get token from Authorization header
     auth = request.headers.get("Authorization")
     if not auth or not auth.startswith("Bearer "):
         raise HTTPException(status_code=401, detail="Missing token")
     token = auth.split(" ")[1]
-    verify_jwt_token(token)
 
+    # 2. Validate and decode token
+    payload = verify_jwt_token(token)
+    user_id = payload.get("user_id")
+    role = payload.get("role")
+
+    if not user_id or not role:
+        raise HTTPException(status_code=401, detail="Invalid token claims")
+
+    # 3. Forward request
     async with httpx.AsyncClient() as client:
         try:
             body = await request.body()
             url = f"{TRANSPORT_SERVICE}/api/transport/{path}"
+
+            # Copy headers except problematic ones
             headers = {
                 k: v for k, v in request.headers.items()
-                if k.lower() not in ["host", "content-length"]
+                if k.lower() not in ["host", "content-length", "authorization"]
             }
             headers.setdefault("User-Agent", "API-Gateway/1.0")
+
+            # 4. Add user claims to forwarded headers
+            headers["X-User-Id"] = str(user_id)
+            headers["X-User-Role"] = role
 
             if request.url.query:
                 url += f"?{request.url.query}"
 
+            # Forward request to transport service
             response = await client.request(
                 request.method.lower(),
                 url,
@@ -158,12 +175,14 @@ async def proxy_transport_service(path: str, request: Request):
                 media_type=content_type or "application/octet-stream",
                 headers=dict(response.headers)
             )
+
         except httpx.TimeoutException:
             return JSONResponse({"error": "Upstream service timeout"}, status_code=504)
         except httpx.RequestError as e:
             return JSONResponse({"error": f"Upstream connection error: {str(e)}"}, status_code=502)
         except Exception:
             return JSONResponse({"error": "Internal gateway error"}, status_code=500)
+
 
 
 # ---------- ECOM SERVICE PROXY (JWT Required) ----------

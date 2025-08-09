@@ -13,7 +13,7 @@ class TransportScheduleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TransportSchedule
-        fields = '__all__'  # includes available_weight dynamically
+        exclude = ["transporter_id"]
 
     def get_available_weight(self, obj):
         available_map = self.context.get('available_map', {})

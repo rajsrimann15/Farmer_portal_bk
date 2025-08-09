@@ -1,6 +1,8 @@
 # views.py
 from rest_framework import generics, status
 from rest_framework.response import Response
+
+from .permissions import IsTransporter
 from .models import TransportSchedule, RoutePoint, Segment, Booking
 from .serializers import TransportScheduleSerializer, BookingSerializer
 from datetime import datetime
@@ -17,6 +19,11 @@ class HealthCheckView(APIView):
 class CreateScheduleView(generics.CreateAPIView):
     queryset = TransportSchedule.objects.all()
     serializer_class = TransportScheduleSerializer
+    permission_classes = [IsTransporter]
+
+    def perform_create(self, serializer):
+        user_id = self.request.headers.get("X-User-Id")
+        serializer.save(transporter_id=user_id)
     
 # List all available schedules
 class ListAvailableSchedules(generics.ListAPIView):

@@ -1,7 +1,9 @@
+import uuid
 from django.db import models
 
 
 class Farmer(models.Model):
+    farmer_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)  # Generated locally
     farmer_govt_id = models.CharField(max_length=100, unique=True)
     name = models.CharField(max_length=100)
     password = models.CharField(max_length=100)
@@ -20,6 +22,7 @@ class Farmer(models.Model):
 
 
 class Consumer(models.Model):
+    consumer_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)  # Generated locally
     name=models.CharField(max_length=100)
     phone_number = models.CharField(max_length=15, unique=True)
     email=models.EmailField(unique=True, null=True)
@@ -35,6 +38,7 @@ class Consumer(models.Model):
 
 
 class Transporter(models.Model):
+    transporter_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)  # Generated locally
     gst_id = models.CharField(max_length=100, unique=True)
     owner_name = models.CharField(max_length=100)
     phone_number = models.CharField(max_length=15, unique=True)

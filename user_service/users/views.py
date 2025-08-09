@@ -7,6 +7,7 @@ from users.serializers import FarmerSerializer, ConsumerSerializer, TransporterS
 from rest_framework.response import Response
 from django.contrib.auth.hashers import check_password
 from rest_framework import status
+from datetime import datetime
 
 
 #HealthCheckView
@@ -16,23 +17,34 @@ class HealthCheckView(APIView):
 
 # Function to generate JWT tokens 
 def get_token(user):
-    refresh = RefreshToken.for_user(user)
-
-    # Add required claims
-    refresh['iss'] = 'raj-key'         
-    refresh['user_id'] = user.id       
-
-    # Role-based fields
+    # Determine role & role-specific ID
     if hasattr(user, 'farmer_id'):
-        refresh['farmer_id'] = user.farmer_id
-    elif hasattr(user, 'gst_id'):
-        refresh['gst_id'] = user.gst_id
-    elif hasattr(user, 'email'):
-        refresh['email'] = user.email
+        role = 'farmer'
+        uid = user.farmer_id
+    elif hasattr(user, 'transporter_id'):
+        role = 'transporter'
+        uid = user.transporter_id
+    else:
+        role = 'consumer'
+        uid = user.consumer_id
+
+    # Create refresh token without for_user()
+    refresh = RefreshToken()
+    refresh['user_id'] = str(uid)
+    refresh['role'] = role
+    refresh['iss'] = 'raj-key'
+
+    # Create access token
+    access_token = refresh.access_token
+    access_token['user_id'] = str(uid)
+    access_token['role'] = role
+    access_token['iss'] = 'raj-key'
 
     return {
         'refresh': str(refresh),
-        'access': str(refresh.access_token)
+        'refresh_expires_at': datetime.fromtimestamp(refresh['exp']).isoformat(),
+        'access': str(access_token),
+        'access_expires_at': datetime.fromtimestamp(access_token['exp']).isoformat(),
     }
 
 #Registration views for different user types
@@ -56,42 +68,39 @@ class farmer_login(APIView):
         password = request.data.get('password')
         
         farmer= get_object_or_404(Farmer, phone_number=phone_number)
-        id=farmer.id
         
         #exception handling
         if not check_password(password,farmer.password):
             return Response({"error": "Invalid credentials"}, status=400)
         
-        token= get_token(farmer)
-        return Response({'access': token['access'],'refresh': token['refresh'], 'id': id}, status=200)
+        token=get_token(farmer)
+        return Response(token, status=200)
 
 class consumer_login(APIView):
     def post(self, request):
         email = request.data.get('email')
         password = request.data.get('password')
         consumer = get_object_or_404(Consumer, email=email)
-        id= consumer.id
         
         # exception handling
         if not check_password(password, consumer.password):
             return Response({"error": "Invalid credentials"}, status=400)
         
         token = get_token(consumer)
-        return Response({'access': token['access'],'refresh': token['refresh'], 'id': id}, status=200)
+        return Response(token,status=200)
 
 class transporter_login(APIView):
     def post(self, request):
         email= request.data.get('email')
         password = request.data.get('password')
         transporter = get_object_or_404(Transporter, email=email)
-        id= transporter.id
         
         # exception handling
         if not check_password(password, transporter.password):
             return Response({"error": "Invalid credentials"}, status=400)
         
         token = get_token(transporter)
-        return Response({'access': token['access'],'refresh': token['refresh'], 'id': id}, status=200)
+        return Response(token,status=200)
 
 #Refresh token view 
 class TokenRefreshView(APIView):

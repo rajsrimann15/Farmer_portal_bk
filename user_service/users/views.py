@@ -2,16 +2,18 @@ from django.shortcuts import get_object_or_404, render
 from rest_framework import generics
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken, TokenError
-from users.models import Farmer, Consumer, Transporter
-from users.serializers import FarmerSerializer, ConsumerSerializer, TransporterSerializer
+from users.models import Farmer, Consumer, Transporter, admin, wholesaler
+from users.serializers import AdminSerializer, FarmerSerializer, ConsumerSerializer, TransporterSerializer, WholesalerSerializer
 from rest_framework.response import Response
 from django.contrib.auth.hashers import check_password
 from rest_framework import status
 from datetime import datetime
 
+from .permissions import IsAdmin
 
 #HealthCheckView
 class HealthCheckView(APIView):
+    #permission_classes = [IsAdmin]
     def get(self, request):
         return Response({'status': 'user_service is live'}, status=status.HTTP_200_OK)
 
@@ -24,9 +26,15 @@ def get_token(user):
     elif hasattr(user, 'transporter_id'):
         role = 'transporter'
         uid = user.transporter_id
-    else:
+    elif hasattr(user, 'consumer_id'):
         role = 'consumer'
         uid = user.consumer_id
+    elif hasattr(user, 'wholesaler_id'):
+        role = 'wholesaler'
+        uid = user.wholesaler_id
+    elif hasattr(user, 'admin_id'):
+        role = 'admin'
+        uid = user.admin_id
 
     # Create refresh token without for_user()
     refresh = RefreshToken()
@@ -60,6 +68,13 @@ class transporter_register(generics.CreateAPIView):
     queryset = Transporter.objects.all()
     serializer_class = TransporterSerializer
 
+class wholesaler_register(generics.CreateAPIView):
+    queryset = wholesaler.objects.all()
+    serializer_class = WholesalerSerializer
+
+class admin_register(generics.CreateAPIView):
+    queryset = admin.objects.all()
+    serializer_class = AdminSerializer
 
 #Login  for different user types
 class farmer_login(APIView):
@@ -102,54 +117,64 @@ class transporter_login(APIView):
         token = get_token(transporter)
         return Response(token,status=200)
 
+class wholesaler_login(APIView):
+    def post(self, request):
+        email = request.data.get('email')
+        password = request.data.get('password')
+        wholesaler_user = get_object_or_404(wholesaler, email=email)
+        
+        # exception handling
+        if not check_password(password, wholesaler_user.password):
+            return Response({"error": "Invalid credentials"}, status=400)
+        
+        token = get_token(wholesaler_user)
+        return Response(token,status=200)
+    
+class admin_login(APIView):
+    def post(self, request):
+        email = request.data.get('email')
+        password = request.data.get('password')
+        admin_user = get_object_or_404(admin, email=email)
+        
+        # exception handling
+        if not check_password(password, admin_user.password):
+            return Response({"error": "Invalid credentials"}, status=400)
+        
+        token = get_token(admin_user)
+        return Response(token,status=200)
+    
 #Refresh token view 
 class TokenRefreshView(APIView):
     def post(self, request):
-        refresh_token = request.data.get("refresh_token")
-
-        if not refresh_token:
+        refresh = request.data.get('refresh')
+        if not refresh:
             return Response({"error": "Refresh token is required"}, status=400)
 
         try:
-            refresh = RefreshToken(refresh_token)
-
-             #identifying the user based on role-specific
-            user = None
-            if 'farmer_id' in refresh:
-                user = Farmer.objects.get(farmer_id=refresh['farmer_id'])
-            elif 'gst_id' in refresh:
-                user = Transporter.objects.get(gst_id=refresh['gst_id'])
-            elif 'email' in refresh:
-                user = Consumer.objects.get(email=refresh['email'])
-
-            if not user:
-                return Response({"error": "User not found"}, status=404)
-
-            # Generate new refresh and access token
-            new_refresh = RefreshToken.for_user(user)
-            new_access = new_refresh.access_token
-
-            #Add custom claims again
-            new_access['user_id'] = user.id
-            new_access['role'] = user.__class__.__name__.lower()
-            new_access['name'] = user.name
-
-            if hasattr(user, 'farmer_id'):
-                new_access['farmer_id'] = user.farmer_id
-            elif hasattr(user, 'gst_id'):
-                new_access['gst_id'] = user.gst_id
-            elif hasattr(user, 'email'):
-                new_access['email'] = user.email
-
-            return Response({
-                'access': str(new_access),
-                'refresh': str(new_refresh),
-            }, status=200)
-
+            token = RefreshToken(refresh)
         except TokenError:
-            return Response({"error": "Invalid or expired refresh token"}, status=401)
-        except (Farmer.DoesNotExist, Transporter.DoesNotExist, Consumer.DoesNotExist):
-            return Response({"error": "User not found"}, status=404)
+            return Response({"error": "Invalid refresh token"}, status=400)
+        
+        role = token.get('role')
+        user_id = token.get('user_id')
+
+        if not role or not user_id:
+            return Response({"error": "Missing role or user_id in token"}, status=400)
+
+        # Generate new tokens
+        if role == 'farmer':
+            user = Farmer.objects.get(farmer_id=user_id)
+        elif role == 'transporter':
+            user = Transporter.objects.get(transporter_id=user_id)
+        elif role == 'consumer':
+            user = Consumer.objects.get(consumer_id=user_id)
+        elif role == 'wholesaler':
+            user = wholesaler.objects.get(wholesaler_id=user_id)
+        elif role == 'admin':
+            user = admin.objects.get(admin_id=user_id)
+
+        new_tokens = get_token(user)
+        return Response(new_tokens, status=200)
     
 #get_zone_id
 class GetZoneIdView(APIView):

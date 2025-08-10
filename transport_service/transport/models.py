@@ -41,4 +41,5 @@ class Booking(models.Model):
     weight = models.IntegerField()
     farmer_id = models.CharField(max_length=100)
     booking_time = models.DateTimeField(auto_now_add=True)
+    total_cost = models.FloatField(null=True, blank=True)
     description = models.TextField(blank=True, null=True)

@@ -30,3 +30,21 @@ class IsFarmer(BasePermission):
         if role != "farmer":
             raise PermissionDenied("Only farmers can perform this action")
         return True
+
+class IsWholesaler(BasePermission):
+    """Allows access only to users with role = wholesaler."""
+
+    def has_permission(self, request, view):
+        role = request.headers.get("X-User-Role")
+        if role != "wholesaler":
+            raise PermissionDenied("Only wholesalers can perform this action")
+        return True
+
+class IsAdmin(BasePermission):
+    """Allows access only to users with role = admin."""
+
+    def has_permission(self, request, view):
+        role = request.headers.get("X-User-Role")
+        if role != "admin":
+            raise PermissionDenied("Only admins can perform this action")
+        return True

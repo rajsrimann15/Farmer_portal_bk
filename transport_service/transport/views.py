@@ -2,7 +2,7 @@
 from rest_framework import generics, status
 from rest_framework.response import Response
 
-from .permissions import IsConsumer, IsFarmer, IsTransporter
+from .permissions import IsConsumer, IsFarmer, IsTransporter , IsWholesaler, IsAdmin
 from .models import TransportSchedule, RoutePoint, Segment, Booking
 from .serializers import TransportScheduleSerializer, BookingSerializer
 from datetime import datetime
@@ -12,6 +12,7 @@ from rest_framework.views import APIView
 
 #HealthCheckView
 class HealthCheckView(APIView):
+    permission_classes = [IsAdmin]
     def get(self, request):
         return Response({'status': 'transport_service is live'}, status=status.HTTP_200_OK)
 
@@ -171,8 +172,9 @@ class BookScheduleView(generics.CreateAPIView):
         serializer = self.get_serializer(data=data)
         serializer.is_valid(raise_exception=True)
         farmer_id = request.headers.get("X-User-Id")
+        total_cost = request.data.get("total_cost")
 
-        serializer.save(farmer_id=farmer_id)
+        serializer.save(farmer_id=farmer_id,total_cost=total_cost)
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 

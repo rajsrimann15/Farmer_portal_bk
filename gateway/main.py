@@ -62,7 +62,7 @@ async def proxy_user_service(path: str, request: Request):
                 timeout=30.0  # Important timeout
             )
 
-              # Import the logging function
+             
             #Log to Cassandra
             log_request(
                 service="USER_SERVICE",
@@ -169,15 +169,13 @@ async def proxy_transport_service(path: str, request: Request):
                 timeout=30.0
             )
 
-            #Log to Cassandra
+            #Logs
             log_request(
-                service="TRANSPORT_SERVICE",
+                service="USER_SERVICE",
                 method=request.method,
                 path=path,
                 req_headers=headers,
-                req_body=body,
-                status_code=response.status_code,
-                res_body=response.content
+                status_code=response.status_code
             )
 
             content_type = response.headers.get("content-type", "").lower()
@@ -257,15 +255,13 @@ async def proxy_ecom_service(path: str, request: Request):
                 timeout=30.0
             )
 
-            #Log to Cassandra
+            #Logs
             log_request(
-                service="ECOM_SERVICE",
+                service="USER_SERVICE",
                 method=request.method,
                 path=path,
                 req_headers=headers,
-                req_body=body,
-                status_code=response.status_code,
-                res_body=response.content
+                status_code=response.status_code
             )
 
             content_type = response.headers.get("content-type", "").lower()
@@ -348,15 +344,13 @@ async def proxy_auction_service(path: str, request: Request):
                 timeout=30.0
             )
 
-            #Log to Cassandra
+            #Logs
             log_request(
-                service="AUCTION_SERVICE",
+                service="USER_SERVICE",
                 method=request.method,
                 path=path,
                 req_headers=headers,
-                req_body=body,
-                status_code=response.status_code,
-                res_body=response.content
+                status_code=response.status_code
             )
 
             content_type = response.headers.get("content-type", "").lower()

@@ -5,9 +5,12 @@ import httpx
 from jwt_utils import verify_jwt_token
 from decouple import config
 from fastapi.middleware.cors import CORSMiddleware
+from mongo_logger import log_request
+
 
 
 app = FastAPI()
+
 
 app.add_middleware(
     CORSMiddleware,
@@ -23,10 +26,12 @@ TRANSPORT_SERVICE = config('TRANSPORT_SERVICE')
 ECOM_SERVICE = config('ECOM_SERVICE')
 AUCTION_SERVICE = config('AUCTION_SERVICE')
 
+
+
 # Public auction endpoints (whitelist)
 PUBLIC_AUCTION_ENDPOINTS = [
     "/zone/",
-    "/price-trend/"
+    "/price-trend/",
     "/health/"
 ]
 
@@ -55,6 +60,16 @@ async def proxy_user_service(path: str, request: Request):
                 headers=headers,
                 content=body,
                 timeout=30.0  # Important timeout
+            )
+
+              # Import the logging function
+            #Log to Cassandra
+            log_request(
+                service="USER_SERVICE",
+                method=request.method,
+                path=path,
+                req_headers=headers,
+                status_code=response.status_code
             )
 
             # Process the response
@@ -154,6 +169,17 @@ async def proxy_transport_service(path: str, request: Request):
                 timeout=30.0
             )
 
+            #Log to Cassandra
+            log_request(
+                service="TRANSPORT_SERVICE",
+                method=request.method,
+                path=path,
+                req_headers=headers,
+                req_body=body,
+                status_code=response.status_code,
+                res_body=response.content
+            )
+
             content_type = response.headers.get("content-type", "").lower()
             if "application/json" in content_type:
                 try:
@@ -188,31 +214,58 @@ async def proxy_transport_service(path: str, request: Request):
 # ---------- ECOM SERVICE PROXY (JWT Required) ----------
 @app.api_route("/api/ecom/{path:path}", methods=["GET", "POST", "PUT", "DELETE"])
 async def proxy_ecom_service(path: str, request: Request):
+    # 1. Get token from Authorization header
     auth = request.headers.get("Authorization")
     if not auth or not auth.startswith("Bearer "):
         raise HTTPException(status_code=401, detail="Missing token")
     token = auth.split(" ")[1]
-    verify_jwt_token(token)
 
+    # 2. Validate and decode token
+    payload = verify_jwt_token(token)
+    user_id = payload.get("user_id")
+    role = payload.get("role")
+
+    if not user_id or not role:
+        raise HTTPException(status_code=401, detail="Invalid token claims")
+
+    # 3. Forward request
     async with httpx.AsyncClient() as client:
         try:
             body = await request.body()
             url = f"{ECOM_SERVICE}/api/ecom/{path}"
+
+            # Copy headers except problematic ones
             headers = {
                 k: v for k, v in request.headers.items()
-                if k.lower() not in ["host", "content-length"]
+                if k.lower() not in ["host", "content-length", "authorization"]
             }
             headers.setdefault("User-Agent", "API-Gateway/1.0")
+
+            # 4. Add user claims to forwarded headers
+            headers["X-User-Id"] = str(user_id)
+            headers["X-User-Role"] = role
 
             if request.url.query:
                 url += f"?{request.url.query}"
 
+            # Forward request to ecom service
             response = await client.request(
                 request.method.lower(),
                 url,
                 headers=headers,
                 content=body,
                 timeout=30.0
+            )
+
+            #Log to Cassandra
+            log_request(
+                service="ECOM_SERVICE",
+                method=request.method,
+                path=path,
+                req_headers=headers,
+                req_body=body,
+                status_code=response.status_code,
+                res_body=response.content
             )
 
             content_type = response.headers.get("content-type", "").lower()
@@ -236,6 +289,7 @@ async def proxy_ecom_service(path: str, request: Request):
                 media_type=content_type or "application/octet-stream",
                 headers=dict(response.headers)
             )
+
         except httpx.TimeoutException:
             return JSONResponse({"error": "Upstream service timeout"}, status_code=504)
         except httpx.RequestError as e:
@@ -244,26 +298,44 @@ async def proxy_ecom_service(path: str, request: Request):
             return JSONResponse({"error": "Internal gateway error"}, status_code=500)
 
 
-
 # ---------- AUCTION SERVICE PROXY ------------
 @app.api_route("/api/auction/{path:path}", methods=["GET", "POST", "PUT", "DELETE"])
 async def proxy_auction_service(path: str, request: Request):
+    user_id = None
+    role = None
+
+    # Only check token if path is not public
     if not is_public_auction_path(path):
         auth = request.headers.get("Authorization")
         if not auth or not auth.startswith("Bearer "):
             raise HTTPException(status_code=401, detail="Missing token")
         token = auth.split(" ")[1]
-        verify_jwt_token(token)
 
+        # Validate and decode token
+        payload = verify_jwt_token(token)
+        user_id = payload.get("user_id")
+        role = payload.get("role")
+
+        if not user_id or not role:
+            raise HTTPException(status_code=401, detail="Invalid token claims")
+
+    # Forward request to auction service
     async with httpx.AsyncClient() as client:
         try:
             body = await request.body()
             url = f"{AUCTION_SERVICE}/api/auction/{path}"
+
+            # Copy headers except problematic ones
             headers = {
                 k: v for k, v in request.headers.items()
-                if k.lower() not in ["host", "content-length"]
+                if k.lower() not in ["host", "content-length", "authorization"]
             }
             headers.setdefault("User-Agent", "API-Gateway/1.0")
+
+            # If authenticated, add user claims
+            if user_id and role:
+                headers["X-User-Id"] = str(user_id)
+                headers["X-User-Role"] = role
 
             if request.url.query:
                 url += f"?{request.url.query}"
@@ -274,6 +346,17 @@ async def proxy_auction_service(path: str, request: Request):
                 headers=headers,
                 content=body,
                 timeout=30.0
+            )
+
+            #Log to Cassandra
+            log_request(
+                service="AUCTION_SERVICE",
+                method=request.method,
+                path=path,
+                req_headers=headers,
+                req_body=body,
+                status_code=response.status_code,
+                res_body=response.content
             )
 
             content_type = response.headers.get("content-type", "").lower()
@@ -297,6 +380,7 @@ async def proxy_auction_service(path: str, request: Request):
                 media_type=content_type or "application/octet-stream",
                 headers=dict(response.headers)
             )
+
         except httpx.TimeoutException:
             return JSONResponse({"error": "Upstream service timeout"}, status_code=504)
         except httpx.RequestError as e:

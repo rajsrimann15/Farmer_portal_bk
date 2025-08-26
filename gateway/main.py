@@ -384,7 +384,7 @@ async def proxy_auction_service(path: str, request: Request):
 
 
 # ---------- PRICING SERVICE PROXY ------------
-@app.api_route("/api/pricing/{path:path}", methods=["GET", "POST", "PUT", "DELETE"])
+@app.api_route("/api/self-pricing/{path:path}", methods=["GET", "POST", "PUT", "DELETE"])
 async def proxy_pricing_service(path: str, request: Request):
     user_id = None
     role = None

@@ -408,7 +408,7 @@ async def proxy_pricing_service(path: str, request: Request):
     async with httpx.AsyncClient() as client:
         try:
             body = await request.body()
-            url = f"{PRICING_SERVICE}/api/pricing/{path}"
+            url = f"{PRICING_SERVICE}/api/self-pricing/{path}"
 
             # Copy headers except problematic ones
             headers = {

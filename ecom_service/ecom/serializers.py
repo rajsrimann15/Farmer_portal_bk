@@ -4,8 +4,7 @@ from .models import Product, Booking
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = '__all__'
-        read_only_fields = ['id', 'created_at']
+        exclude = ['farmer_id']
 
 
 class BookingSerializer(serializers.ModelSerializer):
@@ -17,5 +16,4 @@ class BookingSerializer(serializers.ModelSerializer):
     product = ProductSerializer(read_only=True)  
     class Meta:
         model = Booking
-        fields = '__all__'
-        read_only_fields = ['id', 'booked_at']
+        exclude = ['consumer_id']

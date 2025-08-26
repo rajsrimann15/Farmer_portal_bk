@@ -10,8 +10,6 @@ from mongo_logger import log_request
 
 
 app = FastAPI()
-
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:5173","*"],  # Or ["*"] for dev only
@@ -25,6 +23,8 @@ USER_SERVICE = config('USER_SERVICE')
 TRANSPORT_SERVICE = config('TRANSPORT_SERVICE')
 ECOM_SERVICE = config('ECOM_SERVICE')
 AUCTION_SERVICE = config('AUCTION_SERVICE')
+PRICING_SERVICE = config('AUCTION_SERVICE')
+
 
 
 
@@ -353,6 +353,97 @@ async def proxy_auction_service(path: str, request: Request):
                 status_code=response.status_code
             )
 
+            content_type = response.headers.get("content-type", "").lower()
+            if "application/json" in content_type:
+                try:
+                    return JSONResponse(
+                        content=response.json(),
+                        status_code=response.status_code,
+                        headers=dict(response.headers)
+                    )
+                except (json.JSONDecodeError, UnicodeDecodeError):
+                    return Response(
+                        content=response.content,
+                        status_code=response.status_code,
+                        media_type=content_type,
+                        headers=dict(response.headers)
+                    )
+            return Response(
+                content=response.content,
+                status_code=response.status_code,
+                media_type=content_type or "application/octet-stream",
+                headers=dict(response.headers)
+            )
+
+        except httpx.TimeoutException:
+            return JSONResponse({"error": "Upstream service timeout"}, status_code=504)
+        except httpx.RequestError as e:
+            return JSONResponse({"error": f"Upstream connection error: {str(e)}"}, status_code=502)
+        except Exception:
+            return JSONResponse({"error": "Internal gateway error"}, status_code=500)
+
+
+# ---------- PRICING SERVICE PROXY ------------
+@app.api_route("/api/pricing/{path:path}", methods=["GET", "POST", "PUT", "DELETE"])
+async def proxy_pricing_service(path: str, request: Request):
+    user_id = None
+    role = None
+
+    # Only check token if path is not public
+    if not is_public_auction_path(path):
+        auth = request.headers.get("Authorization")
+        if not auth or not auth.startswith("Bearer "):
+            raise HTTPException(status_code=401, detail="Missing token")
+        token = auth.split(" ")[1]
+
+        # Validate and decode token
+        payload = verify_jwt_token(token)
+        user_id = payload.get("user_id")
+        role = payload.get("role")
+
+        if not user_id or not role:
+            raise HTTPException(status_code=401, detail="Invalid token claims")
+
+    # Forward request to pricing service
+    async with httpx.AsyncClient() as client:
+        try:
+            body = await request.body()
+            url = f"{PRICING_SERVICE}/api/pricing/{path}"
+
+            # Copy headers except problematic ones
+            headers = {
+                k: v for k, v in request.headers.items()
+                if k.lower() not in ["host", "content-length", "authorization"]
+            }
+            headers.setdefault("User-Agent", "API-Gateway/1.0")
+
+            # If authenticated, add user claims
+            if user_id and role:
+                headers["X-User-Id"] = str(user_id)
+                headers["X-User-Role"] = role
+
+            # Preserve query params if present
+            if request.url.query:
+                url += f"?{request.url.query}"
+
+            response = await client.request(
+                request.method.lower(),
+                url,
+                headers=headers,
+                content=body,
+                timeout=30.0
+            )
+
+            # Logs
+            log_request(
+                service="PRICING_SERVICE",
+                method=request.method,
+                path=path,
+                req_headers=headers,
+                status_code=response.status_code
+            )
+
+            # Handle JSON and non-JSON responses
             content_type = response.headers.get("content-type", "").lower()
             if "application/json" in content_type:
                 try:

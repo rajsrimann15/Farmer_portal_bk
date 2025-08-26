@@ -2,6 +2,8 @@ from rest_framework import generics, filters
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.exceptions import ValidationError
+
+from .permissions import IsConsumer, IsFarmer
 from .models import Product, Booking
 from .serializers import ProductSerializer, BookingSerializer
 from rest_framework import status
@@ -23,12 +25,22 @@ class HealthCheckView(APIView):
 # Farmer - Create Product
 class ProductCreateView(generics.CreateAPIView):
     serializer_class = ProductSerializer
+    permission_classes = [IsFarmer]
     queryset = Product.objects.all()
+
+    def perform_create(self, serializer):
+        # Get the X-User-Id header from request
+        farmer_id = self.request.headers.get("X-User-Id")
+        if not farmer_id:
+            raise ValidationError({"error": "X-User-Id header is required"})
+        # Save with farmer_id
+        serializer.save(farmer_id=farmer_id)
 
 
 #  Consumer - List/Search Products
 class ProductListView(generics.ListAPIView):
     serializer_class = ProductSerializer
+    permission_classes = [IsConsumer]
     queryset = Product.objects.all()
     filter_backends = [filters.SearchFilter]
     search_fields = ['name', 'farmer_id']  # Search by product name or farmer_id
@@ -37,6 +49,7 @@ class ProductListView(generics.ListAPIView):
 #  Consumer - Book a Product
 class BookProductView(generics.CreateAPIView):
     serializer_class = BookingSerializer
+    permission_classes = [IsConsumer]
     queryset = Booking.objects.all()
 
     def perform_create(self, serializer):
@@ -49,18 +62,23 @@ class BookProductView(generics.CreateAPIView):
         
         if quantity > product.quantity_available:
             raise ValidationError("Not enough stock available.")
+        
+        # Get the X-User-Id header from request
+        consumer_id = self.request.headers.get("X-User-Id")
+        if not consumer_id:
+            raise ValidationError({"error": "X-User-Id header is required"})
 
         # Reduce product stock
         product.quantity_available -= quantity
         product.save()
-
-        serializer.save()
+        serializer.save(consumer_id=consumer_id)
 
 
 #  Farmer - Get All Bookings for Their Products
 class FarmerBookingsView(APIView):
+    permission_classes = [IsFarmer]
     def get(self, request):
-        farmer_id = request.query_params.get('farmer_id')
+        farmer_id = request.headers.get('X-User-Id')
         if not farmer_id:
             return Response({"error": "farmer_id query param is required"}, status=400)
 
@@ -72,17 +90,18 @@ class FarmerBookingsView(APIView):
 # Farmer - Get All posted Products
 class FarmerProductsView(generics.ListAPIView):
     serializer_class = ProductSerializer
-
+    permission_classes = [IsFarmer]
     def get_queryset(self):
-        farmer_id = self.request.query_params.get('farmer_id')
+        farmer_id = self.request.headers.get('X-User-Id')
         if not farmer_id:
             return Product.objects.none()  # Return empty queryset if no farmer_id provided
         return Product.objects.filter(farmer_id=farmer_id)
     
 #Consumer - Get All Bookings for Their Products
 class ConsumerBookingsView(APIView):
+    permission_classes = [IsConsumer]
     def get(self, request):
-        consumer_id = request.query_params.get('consumer_id')
+        consumer_id = request.headers.get('X-User-Id')
         if not consumer_id:
             return Response({"error": "consumer_id query param is required"}, status=400)
 
@@ -93,35 +112,11 @@ class ConsumerBookingsView(APIView):
 #Consumer - Get All latest products
 class LatestProductsView(generics.ListAPIView):
     serializer_class = ProductSerializer
-
+    permission_classes = [IsConsumer]
     def get_queryset(self):
         return Product.objects.order_by('-created_at')[:10]
 
 
-@csrf_exempt
-def generate_upload_token(request):
-    # Set expiry time (e.g. 10 minutes from now)
-    expire = int(time.time()) + 600  # 10 min token
-
-    # Unique token for each session
-    token = str(uuid.uuid4())
-
-    # Signature creation
-    private_key = settings.IMAGEKIT_PRIVATE_KEY
-    signature_data = f"token={token}&expire={expire}"
-
-    signature = hmac.new(
-        private_key.encode("utf-8"),
-        signature_data.encode("utf-8"),
-        hashlib.sha256
-    ).hexdigest()
-
-    return JsonResponse({
-        "token": token,
-        "expire": expire,
-        "signature": signature,
-        "publicKey": settings.IMAGEKIT_PUBLIC_KEY
-    })
 
 
 

@@ -23,7 +23,7 @@ USER_SERVICE = config('USER_SERVICE')
 TRANSPORT_SERVICE = config('TRANSPORT_SERVICE')
 ECOM_SERVICE = config('ECOM_SERVICE')
 AUCTION_SERVICE = config('AUCTION_SERVICE')
-PRICING_SERVICE = config('AUCTION_SERVICE')
+PRICING_SERVICE = config('SELF_PRICING_SERVICE')
 
 
 
@@ -392,7 +392,7 @@ async def proxy_pricing_service(path: str, request: Request):
     # Only check token if path is not public
     if not is_public_auction_path(path):
         auth = request.headers.get("Authorization")
-        if not auth or not auth.startswith("Bearer "):
+        if not auth or not auth.startswith("Bearer"):
             raise HTTPException(status_code=401, detail="Missing token")
         token = auth.split(" ")[1]
 

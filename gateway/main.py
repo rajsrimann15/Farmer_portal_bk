@@ -208,7 +208,6 @@ async def proxy_transport_service(path: str, request: Request):
             return JSONResponse({"error": "Internal gateway error"}, status_code=500)
 
 
-
 # ---------- ECOM SERVICE PROXY (JWT Required) ----------
 @app.api_route("/api/ecom/{path:path}", methods=["GET", "POST", "PUT", "DELETE"])
 async def proxy_ecom_service(path: str, request: Request):
@@ -293,8 +292,7 @@ async def proxy_ecom_service(path: str, request: Request):
         except Exception:
             return JSONResponse({"error": "Internal gateway error"}, status_code=500)
 
-
-# ---------- AUCTION SERVICE PROXY ------------
+# ---------- AUCTION SERVICE PROXY (JWT Required) ------------
 @app.api_route("/api/auction/{path:path}", methods=["GET", "POST", "PUT", "DELETE"])
 async def proxy_auction_service(path: str, request: Request):
     user_id = None
@@ -383,7 +381,7 @@ async def proxy_auction_service(path: str, request: Request):
             return JSONResponse({"error": "Internal gateway error"}, status_code=500)
 
 
-# ---------- PRICING SERVICE PROXY ------------
+# ---------- PRICING SERVICE PROXY (JWT Required) -------------
 @app.api_route("/api/self-pricing/{path:path}", methods=["GET", "POST", "PUT", "DELETE"])
 async def proxy_pricing_service(path: str, request: Request):
     user_id = None

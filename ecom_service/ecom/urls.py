@@ -8,7 +8,7 @@ from .views import (
     ConsumerBookingsView,
     LatestProductsView,
     HealthCheckView,
-    
+    StatsView,
 )
 
 urlpatterns = [
@@ -24,4 +24,6 @@ urlpatterns = [
     path('farmer/my-products/', FarmerProductsView.as_view()),
     
     #path('farmer/get-token/', generate_upload_token, name='upload_image'),
+
+    path('products/stats/', StatsView.as_view(), name='stats-view'),
 ]

@@ -11,11 +11,9 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
 from imagekitio import ImageKit
-import time
-import hashlib
-import hmac
-import base64
-import uuid
+from datetime import timedelta
+from django.utils import timezone
+
 
 #HealthCheckView
 class HealthCheckView(APIView):
@@ -117,7 +115,20 @@ class LatestProductsView(generics.ListAPIView):
         return Product.objects.order_by('-created_at')[:10]
 
 
+#stats
+class StatsView(APIView):
+    #permission_classes = [IsFarmer|IsConsumer]
+    def get(self, request):
+        today = timezone.now()
+        last_week = today - timedelta(days=7)
 
+        new_products = Product.objects.filter(created_at=last_week).count()
+        total_products = Product.objects.count()
+
+        return Response({
+            "new_products_last_week": new_products,
+            "total_products": total_products
+        })
 
 
 

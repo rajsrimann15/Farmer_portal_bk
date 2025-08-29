@@ -1,0 +1,12 @@
+Django>=4.0
+gunicorn
+psycopg2-binary
+dj-database-url
+djangorestframework
+djangorestframework-simplejwt
+python-decouple
+cryptography
+requests
+django-cors-headers
+imagekitio
+pillow

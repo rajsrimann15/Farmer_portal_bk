@@ -194,7 +194,7 @@ class FarmerStatsView(APIView):
         today = timezone.now()
         last_week = today - timedelta(days=7)
 
-        new_farmers = Farmer.objects.filter(created_at__gte=last_week).count()
+        new_farmers = Farmer.objects.filter(created_at=last_week).count()
         total_farmers = Farmer.objects.count()
 
         return Response({

@@ -16,6 +16,9 @@ class Farmer(models.Model):
     state = models.CharField(max_length=100, null=True, blank=True)
     country = models.CharField(max_length=100, null=True, blank=True)
     zone = models.PositiveIntegerField()
+    created_at = models.DateTimeField(auto_now_add=True,null=True)
+    updated_at = models.DateTimeField(auto_now_add=True,null=True)
+
 
     def __str__(self):
         return f"{self.name} ({self.farmer_id})"
@@ -31,6 +34,9 @@ class Consumer(models.Model):
     district = models.CharField(max_length=100, null=True, blank=True)
     state = models.CharField(max_length=100, null=True, blank=True)
     country = models.CharField(max_length=100, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True,null=True)
+    updated_at = models.DateTimeField(auto_now_add=True,null=True)
+
     
 
     def __str__(self):
@@ -48,6 +54,9 @@ class Transporter(models.Model):
     district = models.CharField(max_length=100, null=True, blank=True)
     state = models.CharField(max_length=100, null=True, blank=True)
     country = models.CharField(max_length=100, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True,null=True)
+    updated_at = models.DateTimeField(auto_now_add=True,null=True)
+
     
     def __str__(self):
         return f"Transporter({self.owner_name}, {self.gst_id})"
@@ -64,6 +73,9 @@ class wholesaler(models.Model):
     district = models.CharField(max_length=100, null=True, blank=True)
     state = models.CharField(max_length=100, null=True, blank=True)
     country = models.CharField(max_length=100, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True,null=True)
+    updated_at = models.DateTimeField(auto_now_add=True,null=True)
+
 
     def __str__(self):
         return f"Wholesaler({self.name}, {self.gst_id})"
@@ -74,6 +86,8 @@ class admin(models.Model):
     name = models.CharField(max_length=100)
     email = models.EmailField(unique=True, null=True)
     password = models.CharField(max_length=100)
+    created_at = models.DateTimeField(auto_now_add=True,null=True)
+    updated_at = models.DateTimeField(auto_now_add=True,null=True)
 
     def __str__(self):
         return f"Admin({self.name})"

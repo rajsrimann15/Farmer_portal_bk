@@ -7,7 +7,8 @@ from users.serializers import AdminSerializer, FarmerSerializer, ConsumerSeriali
 from rest_framework.response import Response
 from django.contrib.auth.hashers import check_password
 from rest_framework import status
-from datetime import datetime
+from datetime import datetime, timedelta
+from django.utils import timezone
 
 from .permissions import IsAdmin
 
@@ -186,6 +187,19 @@ class GetZoneIdView(APIView):
         except Farmer.DoesNotExist:
             return Response({'error': 'Farmer not found'}, status=status.HTTP_404_NOT_FOUND)
 
-        
+#Stats view
+class FarmerStatsView(APIView):
+    #permission_classes = [IsAdmin]
+    def get(self, request):
+        today = timezone.now()
+        last_week = today - timedelta(days=7)
+
+        new_farmers = Farmer.objects.filter(created_at__gte=last_week).count()
+        total_farmers = Farmer.objects.count()
+
+        return Response({
+            "new_farmers_last_week": new_farmers,
+            "total_farmers": total_farmers
+        })      
     
         

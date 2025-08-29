@@ -14,6 +14,7 @@ from .views import (
     GetZoneIdView,
     wholesaler_login,
     wholesaler_register,
+    FarmerStatsView,
 )
 
 urlpatterns = [
@@ -32,5 +33,8 @@ urlpatterns = [
     path('admin/login/', admin_login.as_view()),
 
     path('token/refresh/', TokenRefreshView.as_view()),
-    path('get_zone_id/<int:user_id>/', GetZoneIdView.as_view(), name='get-zone-id')
+    path('get_zone_id/<int:user_id>/', GetZoneIdView.as_view(), name='get-zone-id'),
+
+    path('farmer/stats/', FarmerStatsView.as_view(), name='farmer-stats'),
+    
 ]

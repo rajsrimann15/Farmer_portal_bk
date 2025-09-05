@@ -170,4 +170,30 @@ class GetSessionView(APIView):
         )
         return Response(list(sessions), status=status.HTTP_200_OK)
 
+class GetLastClosedSessionView(APIView):
+    def get(self, request):
+        # Get zone from query params
+        zone = request.query_params.get("zone")
+        if not zone:
+            return Response({"error": "zone is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            zone = int(zone)
+        except ValueError:
+            return Response({"error": "zone must be an integer"}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Fetch the latest session where is_active=False
+        session = (
+            farmer_pricing.objects.filter(zone=zone, is_active=False)
+            .order_by("-created_at")
+            .values("id", "zone","current_price", "created_at", "is_active")
+            .first()  # Get only one latest session
+        )
+
+        # If no session found
+        if not session:
+            return Response({"message": "No closed session found for this zone"}, status=status.HTTP_404_NOT_FOUND)
+
+        return Response(session, status=status.HTTP_200_OK)
+        
 

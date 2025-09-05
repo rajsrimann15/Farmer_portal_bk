@@ -1,0 +1,24 @@
+1) I cannot completely re design my architecture to use kafka.
+2) I have planned to build notification system (later) and recommendation system
+2) say where we can use kafka in it.
+
+
+Before that let me say how my project is designed.
+
+
+API Gateway --> 1) user_service - own Db
+		2)tranport_sevice - own Db
+		3)prciing_service - own Db
+
+Each service is independent now, every request happen from api gateway, No inter-communication b/w the services.
+Lets build the inter communication to build a recommendation service.
+
+
+Recommendation Sytem ( to farmer only)
+1) from user_service - update how many new farmer register this portal in last week.
+2) from ecom_service - update how many  farmer  posted produc in this ecom service in last week.
+3) from pricing_service - (we ll decide later)
+
+
+use a simple ML model and easy and clean way.
+

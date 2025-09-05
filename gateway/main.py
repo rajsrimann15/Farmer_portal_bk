@@ -24,8 +24,7 @@ TRANSPORT_SERVICE = config('TRANSPORT_SERVICE')
 ECOM_SERVICE = config('ECOM_SERVICE')
 AUCTION_SERVICE = config('AUCTION_SERVICE')
 PRICING_SERVICE = config('SELF_PRICING_SERVICE')
-
-
+RECOMMENDATION_SERVICE = config('RECOMMENDATION_SERVICE')
 
 
 # Public auction endpoints (whitelist)
@@ -121,7 +120,6 @@ async def proxy_user_service(path: str, request: Request):
                 content={"error": "Internal gateway error"},
                 status_code=500
             )
-
 
 # ---------- TRANSPORT SERVICE PROXY (JWT Required) ----------
 @app.api_route("/api/transport/{path:path}", methods=["GET", "POST", "PUT", "DELETE"])
@@ -470,3 +468,97 @@ async def proxy_pricing_service(path: str, request: Request):
             return JSONResponse({"error": f"Upstream connection error: {str(e)}"}, status_code=502)
         except Exception:
             return JSONResponse({"error": "Internal gateway error"}, status_code=500)
+
+
+# ---------- RECOMMENDATION SERVICE PROXY (JWT Required) -------------
+@app.api_route("/api/recom/{path:path}", methods=["GET", "POST", "PUT", "DELETE"])
+async def proxy_recommendation_service(path: str, request: Request):
+    user_id = None
+    role = None
+
+    # JWT Validation — Only check token if endpoint is not public
+    if not is_public_auction_path(path):  # Reuse same public path checker
+        auth = request.headers.get("Authorization")
+        if not auth or not auth.startswith("Bearer"):
+            raise HTTPException(status_code=401, detail="Missing token")
+        token = auth.split(" ")[1]
+
+        # Validate and decode JWT token
+        payload = verify_jwt_token(token)
+        user_id = payload.get("user_id")
+        role = payload.get("role")
+
+        if not user_id or not role:
+            raise HTTPException(status_code=401, detail="Invalid token claims")
+
+    # Forward request to recommendation service
+    async with httpx.AsyncClient() as client:
+        try:
+            body = await request.body()
+            url = f"{RECOMMENDATION_SERVICE}/api/recom/{path}"
+
+            # Copy safe headers, exclude host/content-length/auth
+            headers = {
+                k: v for k, v in request.headers.items()
+                if k.lower() not in ["host", "content-length", "authorization"]
+            }
+            headers.setdefault("User-Agent", "API-Gateway/1.0")
+
+            # Add JWT claims for downstream usage
+            if user_id and role:
+                headers["X-User-Id"] = str(user_id)
+                headers["X-User-Role"] = role
+
+            # Preserve query params
+            if request.url.query:
+                url += f"?{request.url.query}"
+
+            # Send request to recommendation service
+            response = await client.request(
+                request.method.lower(),
+                url,
+                headers=headers,
+                content=body,
+                timeout=30.0
+            )
+
+            # Log the request
+            log_request(
+                service="RECOMMENDATION_SERVICE",
+                method=request.method,
+                path=path,
+                req_headers=headers,
+                status_code=response.status_code
+            )
+
+            # Handle JSON and non-JSON responses
+            content_type = response.headers.get("content-type", "").lower()
+            if "application/json" in content_type:
+                try:
+                    return JSONResponse(
+                        content=response.json(),
+                        status_code=response.status_code,
+                        headers=dict(response.headers)
+                    )
+                except (json.JSONDecodeError, UnicodeDecodeError):
+                    return Response(
+                        content=response.content,
+                        status_code=response.status_code,
+                        media_type=content_type,
+                        headers=dict(response.headers)
+                    )
+            return Response(
+                content=response.content,
+                status_code=response.status_code,
+                media_type=content_type or "application/octet-stream",
+                headers=dict(response.headers)
+            )
+
+        except httpx.TimeoutException:
+            return JSONResponse({"error": "Upstream service timeout"}, status_code=504)
+        except httpx.RequestError as e:
+            return JSONResponse({"error": f"Upstream connection error: {str(e)}"}, status_code=502)
+        except Exception:
+            return JSONResponse({"error": "Internal gateway error"}, status_code=500)
+
+

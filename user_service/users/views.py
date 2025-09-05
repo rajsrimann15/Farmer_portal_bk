@@ -2,6 +2,7 @@ from django.shortcuts import get_object_or_404, render
 from rest_framework import generics
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken, TokenError
+from decouple import config
 from users.models import Farmer, Consumer, Transporter, admin, wholesaler
 from users.serializers import AdminSerializer, FarmerSerializer, ConsumerSerializer, TransporterSerializer, WholesalerSerializer
 from rest_framework.response import Response
@@ -9,8 +10,9 @@ from django.contrib.auth.hashers import check_password
 from rest_framework import status
 from datetime import datetime, timedelta
 from django.utils import timezone
+from .permissions import IsAdmin, IsFarmer
 
-from .permissions import IsAdmin
+SECRET_API_KEY = config('SECRET_API_KEY')
 
 #HealthCheckView
 class HealthCheckView(APIView):
@@ -179,6 +181,7 @@ class TokenRefreshView(APIView):
     
 #get_zone_id
 class GetZoneIdView(APIView):
+    #permission_classes = [IsFarmer]
     def get(self, request, user_id):
         try:
             farmer = Farmer.objects.get(id=user_id)
@@ -189,17 +192,25 @@ class GetZoneIdView(APIView):
 
 #Stats view
 class FarmerStatsView(APIView):
-    #permission_classes = [IsAdmin]
     def get(self, request):
+        # Verify secret key
+        secret_key = request.headers.get("X-SECRET-KEY")
+        if secret_key != SECRET_API_KEY:
+            return Response(
+                {"detail": "Unauthorized - Invalid Secret Key"},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+
         today = timezone.now()
         last_week = today - timedelta(days=7)
 
+        # Count farmers created in the last week
         new_farmers = Farmer.objects.filter(created_at=last_week).count()
         total_farmers = Farmer.objects.count()
 
         return Response({
             "new_farmers_last_week": new_farmers,
             "total_farmers": total_farmers
-        })      
-    
+        })    
+
         

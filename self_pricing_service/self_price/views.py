@@ -149,7 +149,25 @@ class UpdateAveragePriceView(APIView):
 
         return round(weighted_price, 2)
 
+#GetSessionView
+class GetSessionView(APIView):
+    def get(self, request):
+        # Get zone from query params
+        zone = request.query_params.get("zone")
+        if not zone:
+            return Response({"error": "zone is required"}, status=status.HTTP_400_BAD_REQUEST)
 
+        try:
+            zone = int(zone)
+        except ValueError:
+            return Response({"error": "zone must be an integer"}, status=status.HTTP_400_BAD_REQUEST)
 
+        # Fetch latest 10 active sessions for the given zone
+        sessions = (
+            farmer_pricing.objects.filter(zone=zone, is_active=True)
+            .order_by("-created_at")[:10]
+            .values("id", "zone", "created_at", "is_active")  # Fetch only required fields
+        )
+        return Response(list(sessions), status=status.HTTP_200_OK)
 
 

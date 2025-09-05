@@ -2,7 +2,7 @@ from rest_framework import generics, filters
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.exceptions import ValidationError
-
+from decouple import config
 from .permissions import IsConsumer, IsFarmer
 from .models import Product, Booking
 from .serializers import ProductSerializer, BookingSerializer
@@ -13,6 +13,8 @@ from django.conf import settings
 from imagekitio import ImageKit
 from datetime import timedelta
 from django.utils import timezone
+
+SECRET_API_KEY = config('SECRET_API_KEY')
 
 
 #HealthCheckView
@@ -117,18 +119,27 @@ class LatestProductsView(generics.ListAPIView):
 
 #stats
 class StatsView(APIView):
-    #permission_classes = [IsFarmer|IsConsumer]
-    def get(self, request):
-        today = timezone.now()
-        last_week = today - timedelta(days=7)
+        def get(self, request):
+        # Verify secret key
+            secret_key = request.headers.get("X-SECRET-KEY")
+            if secret_key != SECRET_API_KEY:
+                return Response(
+                    {"detail": "Unauthorized - Invalid Secret Key"},
+                    status=status.HTTP_401_UNAUTHORIZED
+                )
 
-        new_products = Product.objects.filter(created_at=last_week).count()
-        total_products = Product.objects.count()
+            today = timezone.now()
+            last_week = today - timedelta(days=7)
 
-        return Response({
-            "new_products_last_week": new_products,
-            "total_products": total_products
-        })
+            # Count farmers created in the last week
+            new_farmers = Product.objects.filter(created_at=last_week).count()
+            total_farmers = Product.objects.count()
+
+            return Response({
+                "new_products_last_week": new_farmers,
+                "total_products": total_farmers
+            })
+
 
 
 

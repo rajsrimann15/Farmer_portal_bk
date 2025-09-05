@@ -31,7 +31,8 @@ RECOMMENDATION_SERVICE = config('RECOMMENDATION_SERVICE')
 PUBLIC_AUCTION_ENDPOINTS = [
     "/zone/",
     "/price-trend/",
-    "/health/"
+    "/health/",
+    "/last-closed-session/"
 ]
 
 def is_public_auction_path(path: str) -> bool:

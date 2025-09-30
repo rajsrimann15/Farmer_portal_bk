@@ -21,7 +21,7 @@ class AddBidderView(APIView):
         except farmer_pricing.DoesNotExist:
             return Response({"error": "FarmerPricing not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        farmer_id = str(request.data.get("farmer_id"))
+        farmer_id = request.headers.get("X-User-Id")
         product_name = request.data.get("product_name")
         price = request.data.get("price")
 

@@ -1,8 +1,0 @@
-fastapi
-uvicorn
-httpx
-python-jose
-python-decouple
-starlette>=0.27.0
-pymongo
-dotenv

@@ -145,7 +145,9 @@ class admin_login(APIView):
         
         token = get_token(admin_user)
         return Response(token,status=200)
-    
+
+
+
 #Refresh token view 
 class TokenRefreshView(APIView):
     def post(self, request):

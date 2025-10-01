@@ -12,7 +12,7 @@ from rest_framework.views import APIView
 
 #HealthCheckView
 class HealthCheckView(APIView):
-    permission_classes = [IsAdmin]
+    #permission_classes = [IsAdmin]
     def get(self, request):
         return Response({'status': 'transport_service is live'}, status=status.HTTP_200_OK)
 
@@ -235,4 +235,16 @@ class ListFarmerBookings(generics.ListAPIView):
 
         # Get all bookings for the farmer
         return Booking.objects.filter(farmer_id=farmer_id).order_by("-booking_time")
+      
+#List Schedule for a transporter
+class ListTransporterSchedules(generics.ListAPIView):
+    serializer_class = TransportScheduleSerializer
+    permission_classes = [IsTransporter]
+    def get_queryset(self):
+        transporter_id = self.request.headers.get("X-User-Id")
+        if not transporter_id:
+            return TransportSchedule.objects.none()
+
+        return TransportSchedule.objects.filter(transporter_id=transporter_id).order_by("-start_date", "-start_time")
     
+

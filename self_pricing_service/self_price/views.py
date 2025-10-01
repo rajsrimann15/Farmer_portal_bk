@@ -4,11 +4,12 @@ from rest_framework.response import Response
 from rest_framework import status
 from .models import farmer_pricing  , MSP
 from .serializers import farmerPricingSerializer, MSPSerializer
-from  .permissions import IsConsumer, IsFarmer
+from  .permissions import IsConsumer, IsFarmer, IsAdmin
 import statistics
 
 #HealthCheckView
 class HealthCheckView(APIView):
+    #permission_classes = [IsAdmin]
     def get(self, request):
         return Response({'status': 'self_pricing_service is live'}, status=status.HTTP_200_OK)
     

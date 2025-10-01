@@ -13,12 +13,14 @@ from django.conf import settings
 from imagekitio import ImageKit
 from datetime import timedelta
 from django.utils import timezone
+from permissions import IsAdmin
 
 SECRET_API_KEY = config('SECRET_API_KEY')
 
 
 #HealthCheckView
 class HealthCheckView(APIView):
+    #permission_classes = [IsAdmin]
     def get(self, request):
         return Response({'status': 'ecom_service is live'}, status=status.HTTP_200_OK)
 
@@ -97,7 +99,7 @@ class FarmerProductsView(generics.ListAPIView):
             return Product.objects.none()  # Return empty queryset if no farmer_id provided
         return Product.objects.filter(farmer_id=farmer_id)
     
-#Consumer - Get All Bookings for Their Products
+#Consumer - Get All Booking histroy
 class ConsumerBookingsView(APIView):
     permission_classes = [IsConsumer]
     def get(self, request):
@@ -115,7 +117,6 @@ class LatestProductsView(generics.ListAPIView):
     permission_classes = [IsConsumer]
     def get_queryset(self):
         return Product.objects.order_by('-created_at')[:10]
-
 
 #stats
 class StatsView(APIView):

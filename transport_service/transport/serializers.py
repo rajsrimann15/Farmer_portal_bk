@@ -55,4 +55,3 @@ class TransportScheduleSerializer(serializers.ModelSerializer):
 class BookingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Booking
-        exclude = ['farmer_id']

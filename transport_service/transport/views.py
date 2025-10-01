@@ -111,6 +111,7 @@ class BookScheduleView(generics.CreateAPIView):
         to_place = data.get("to_place")
         weight = int(data.get("weight", 1))
         date_str = data.get("date")
+        
 
         # Parse and validate date
         if not date_str:

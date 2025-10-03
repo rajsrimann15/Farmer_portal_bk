@@ -248,4 +248,3 @@ class ListTransporterSchedules(generics.ListAPIView):
 
         return TransportSchedule.objects.filter(transporter_id=transporter_id).order_by("-start_date", "-start_time")
     
-

@@ -11,5 +11,4 @@ urlpatterns = [
     path("bookings/transporter/", ListTransporterBookings.as_view()),
     path("bookings/farmer/", ListFarmerBookings.as_view(), name='farmer_bookings'),
     path("schedules/transporter/", ListTransporterSchedules.as_view(), name='transporter_schedules')
-
 ]

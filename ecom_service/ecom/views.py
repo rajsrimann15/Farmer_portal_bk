@@ -13,7 +13,7 @@ from django.conf import settings
 from imagekitio import ImageKit
 from datetime import timedelta
 from django.utils import timezone
-from permissions import IsAdmin
+from .permissions import IsAdmin
 
 SECRET_API_KEY = config('SECRET_API_KEY')
 

@@ -12,7 +12,6 @@ from rest_framework import status
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
-from imagekitio import ImageKit
 from datetime import timedelta
 from django.utils import timezone
 from .permissions import IsAdmin

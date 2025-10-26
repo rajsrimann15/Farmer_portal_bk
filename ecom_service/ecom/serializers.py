@@ -9,6 +9,11 @@ class ProductSerializer(serializers.ModelSerializer):
         model = Product
         exclude = ['farmer_id']
 
+    def create(self, validated_data):
+        # Remove 'image' key so Django doesn’t complain
+        validated_data.pop('image', None)
+        return super().create(validated_data)
+
 
 class BookingSerializer(serializers.ModelSerializer):
      

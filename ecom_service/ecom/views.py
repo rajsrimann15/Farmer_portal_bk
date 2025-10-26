@@ -16,7 +16,6 @@ from imagekitio import ImageKit
 from datetime import timedelta
 from django.utils import timezone
 from .permissions import IsAdmin
-from .utils.imagekit_helper import imagekit
 from PIL import Image
 import cloudinary.uploader
 

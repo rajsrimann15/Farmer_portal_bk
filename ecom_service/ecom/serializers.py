@@ -2,6 +2,9 @@ from rest_framework import serializers
 from .models import Product, Booking
 
 class ProductSerializer(serializers.ModelSerializer):
+    image = serializers.ImageField(write_only=True, required=False)
+    image_id = serializers.URLField(read_only=True)
+
     class Meta:
         model = Product
         exclude = ['farmer_id']

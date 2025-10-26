@@ -144,6 +144,6 @@ CORS_ALLOW_CREDENTIALS = True
 
 
 # ImageKit Configuration
-IMAGEKIT_PUBLIC_KEY = 'public_kB8erq49la9BswomChwef7bxi4s='
-IMAGEKIT_PRIVATE_KEY = 'private_9dlqwv+tC+0oChSh1gFGCeCGoaQ='
-IMAGEKIT_URL_ENDPOINT = 'https://ik.imagekit.io/your_url_iv41tp90pa/' # Don't forget the trailing slash!
+IMAGEKIT_PUBLIC_KEY = config('IMAGEKIT_PUBLIC_KEY')
+IMAGEKIT_PRIVATE_KEY = config('IMAGEKIT_PRIVATE_KEY')
+IMAGEKIT_URL_ENDPOINT = config('IMAGEKIT_URL_ENDPOINT')

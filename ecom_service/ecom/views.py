@@ -14,6 +14,7 @@ from imagekitio import ImageKit
 from datetime import timedelta
 from django.utils import timezone
 from .permissions import IsAdmin
+from .utils.imagekit_helper import imagekit
 
 SECRET_API_KEY = config('SECRET_API_KEY')
 
@@ -31,12 +32,46 @@ class ProductCreateView(generics.CreateAPIView):
     queryset = Product.objects.all()
 
     def perform_create(self, serializer):
-        # Get the X-User-Id header from request
         farmer_id = self.request.headers.get("X-User-Id")
         if not farmer_id:
             raise ValidationError({"error": "X-User-Id header is required"})
-        # Save with farmer_id
-        serializer.save(farmer_id=farmer_id)
+
+        # Get image file from request (must match frontend form field)
+        image_file = self.request.FILES.get("image")
+        image_url = None
+
+        if image_file:
+            # Upload to ImageKit
+            upload = imagekit.upload_file(
+                file=image_file,
+                file_name=image_file.name,
+                options={"folder": "/farmer_portal/ecom_service/farmer_products/", "is_private_file": False}
+            )
+
+            # Retrieve public URL
+            image_url = upload.get("url")
+
+        serializer.save(farmer_id=farmer_id, image_id=image_url)
+        farmer_id = self.request.headers.get("X-User-Id")
+        if not farmer_id:
+            raise ValidationError({"error": "X-User-Id header is required"})
+
+        # Get image file from request (must match frontend form field)
+        image_file = self.request.FILES.get("image")
+        image_url = None
+
+        if image_file:
+            # Upload to ImageKit
+            upload = imagekit.upload_file(
+                file=image_file,
+                file_name=image_file.name,
+                options={"folder": "/products/", "is_private_file": False}
+            )
+
+            # Retrieve public URL
+            image_url = upload.get("url")
+
+        serializer.save(farmer_id=farmer_id, image_id=image_url)
 
 
 #  Consumer - List/Search Products

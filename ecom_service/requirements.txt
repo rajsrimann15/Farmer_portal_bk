@@ -10,3 +10,4 @@ requests
 django-cors-headers
 imagekitio
 pillow
+cloudinary

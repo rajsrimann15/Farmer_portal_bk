@@ -61,15 +61,20 @@ class ProductCreateView(generics.CreateAPIView):
                 file_name = f"{uuid.uuid4()}.jpg"
 
                 # Upload to ImageKit
-                upload = imagekit.upload_file(
-                    file=buffer,  # Can pass BytesIO directly
-                    file_name=file_name,
-                    options={"folder": "/products", "is_private_file": False}
-                )
+                try:
+                    # ImageKit upload code
+                    upload = imagekit.upload_file(
+                        file=buffer,
+                        file_name=file_name,
+                        options={"folder": "/products", "is_private_file": False}
+                    )
 
-                image_url = upload.get("response", {}).get("url")
-                if not image_url:
-                    raise ValidationError({"image_upload_error": "ImageKit did not return a URL."})
+                    image_url = upload.get("url")
+                    if not image_url:
+                        raise ValidationError({"image_upload_error": "ImageKit did not return a URL"})
+                except Exception as e:
+                    # Convert to string to avoid serialization error
+                    raise ValidationError({"image_upload_error": str(e)})
 
             except Exception as e:
                 raise ValidationError({"image_upload_error": str(e)})

@@ -37,26 +37,30 @@ class ProductCreateView(generics.CreateAPIView):
     queryset = Product.objects.all()
 
     def perform_create(self, serializer):
+        # Get farmer ID from headers
         farmer_id = self.request.headers.get("X-User-Id")
         if not farmer_id:
             raise ValidationError({"error": "X-User-Id header is required"})
 
+        # Get uploaded image file
         image_file = self.request.FILES.get("image")
         image_url = None
 
         if image_file:
             try:
-                # Open and convert image to RGB (for JPG)
+                # Open image using Pillow
                 img = Image.open(image_file)
+
+                # Convert RGBA/P mode to RGB for JPG
                 if img.mode in ("RGBA", "P"):
                     img = img.convert("RGB")
 
-                # Save image as JPG in-memory
+                # Save image to memory buffer as JPG
                 buffer = io.BytesIO()
                 img.save(buffer, format="JPEG", quality=90)
                 buffer.seek(0)
 
-                # Generate a unique filename
+                # Unique file name
                 file_name = f"{uuid.uuid4()}.jpg"
 
                 # Upload to Cloudinary (public by default)
@@ -74,24 +78,11 @@ class ProductCreateView(generics.CreateAPIView):
                     raise ValidationError({"image_upload_error": "Cloudinary did not return a URL"})
 
             except Exception as e:
+                # Convert to string to avoid serialization issues
                 raise ValidationError({"image_upload_error": str(e)})
 
-        # Save product with farmer and image
-        product = serializer.save(farmer_id=farmer_id, image_id=image_url)
-        return product
-
-    def create(self, request, *args, **kwargs):
-        """Return the product data along with the public image URL"""
-        product = self.perform_create(self.get_serializer(data=request.data))
-        serializer = self.get_serializer(product)
-        return Response(
-            {
-                "message": "Product created successfully",
-                "product": serializer.data,
-                "public_image_url": product.image_id,
-            },
-            status=status.HTTP_201_CREATED,
-        )
+        # Save product record with farmer_id and image_id (Cloudinary URL)
+        serializer.save(farmer_id=farmer_id, image_id=image_url)
 
 
 #  Consumer - List/Search Products

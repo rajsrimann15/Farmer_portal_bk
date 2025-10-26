@@ -84,7 +84,10 @@ class ProductCreateView(generics.CreateAPIView):
                 # Log the actual error for debugging
                 print(f"Image upload error: {str(e)}")
                 # Return a simple error message without nesting ValidationError
-                raise ValidationError({"image_upload_error": f"Failed to upload image: {str(e)}"})
+                return JsonResponse(
+                    {"error": "Image upload failed. Please try again."},
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                )
 
         # Save the product with farmer_id and ImageKit URL
         serializer.save(farmer_id=farmer_id, image_id=image_url)

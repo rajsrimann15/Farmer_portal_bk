@@ -36,20 +36,25 @@ class ProductCreateView(generics.CreateAPIView):
         if not farmer_id:
             raise ValidationError({"error": "X-User-Id header is required"})
 
-        # Get image file from request (must match frontend form field)
         image_file = self.request.FILES.get("image")
         image_url = None
 
         if image_file:
-            # Upload to ImageKit
-            upload = imagekit.upload_file(
-                file=image_file,
-                file_name=image_file.name,
-                options={"folder": "/farmer_portal/ecom_service/farmer_products/", "is_private_file": False}
-            )
+            try:
+                upload = imagekit.upload_file(
+                    file=image_file,
+                    file_name=image_file.name,
+                    options={"folder": "/products/", "is_private_file": False}
+                )
 
-            # Retrieve public URL
-            image_url = upload.get("url")
+                #Directly use the flat dictionary keys
+                image_url = upload.get("url")
+
+                if not image_url:
+                    raise ValidationError({"image_upload_error": "ImageKit did not return a URL."})
+
+            except Exception as e:
+                raise ValidationError({"image_upload_error": str(e)})
 
         serializer.save(farmer_id=farmer_id, image_id=image_url)
 

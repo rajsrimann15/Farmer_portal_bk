@@ -61,29 +61,30 @@ class ProductCreateView(generics.CreateAPIView):
                 file_name = f"{uuid.uuid4()}.jpg"
 
                 # Upload to ImageKit
-                try:
-                    upload = imagekit.upload_file(
-                        file=buffer,
-                        file_name=file_name,
-                        options={"folder": "/products", "is_private_file": False}
-                    )
+                upload = imagekit.upload_file(
+                    file=buffer,
+                    file_name=file_name,
+                    options={"folder": "/products", "is_private_file": False}
+                )
 
-                    # Ensure safe access to the URL
-                    if hasattr(upload, "get") and callable(getattr(upload, "get")):
-                        image_url = upload.get("url")
-                    elif isinstance(upload, dict):
-                        image_url = upload.get("url")
-                    else:
-                        raise ValidationError({"image_upload_error": "Unexpected response from ImageKit"})
+                # Ensure safe access to the URL
+                if hasattr(upload, "get") and callable(getattr(upload, "get")):
+                    image_url = upload.get("url")
+                elif isinstance(upload, dict):
+                    image_url = upload.get("url")
+                else:
+                    # Log the unexpected response for debugging
+                    print(f"Unexpected ImageKit response: {upload}")
+                    raise Exception("Unexpected response from ImageKit")
 
-                    if not image_url:
-                        raise ValidationError({"image_upload_error": "ImageKit did not return a URL"})
-                except Exception as e:
-                    # Convert exception to string to avoid serialization issues
-                    raise ValidationError({"image_upload_error": str(e)})
+                if not image_url:
+                    raise Exception("ImageKit did not return a URL")
 
             except Exception as e:
-                raise ValidationError({"image_upload_error": str(e)})
+                # Log the actual error for debugging
+                print(f"Image upload error: {str(e)}")
+                # Return a simple error message without nesting ValidationError
+                raise ValidationError({"image_upload_error": f"Failed to upload image: {str(e)}"})
 
         # Save the product with farmer_id and ImageKit URL
         serializer.save(farmer_id=farmer_id, image_id=image_url)

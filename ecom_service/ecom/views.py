@@ -67,7 +67,7 @@ class ProductCreateView(generics.CreateAPIView):
                     options={"folder": "/products", "is_private_file": False}
                 )
 
-                image_url = upload.get("url")
+                image_url = upload.get("response", {}).get("url")
                 if not image_url:
                     raise ValidationError({"image_upload_error": "ImageKit did not return a URL."})
 

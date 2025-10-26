@@ -62,23 +62,30 @@ class ProductCreateView(generics.CreateAPIView):
 
                 # Upload to ImageKit
                 try:
-                    # ImageKit upload code
                     upload = imagekit.upload_file(
                         file=buffer,
                         file_name=file_name,
                         options={"folder": "/products", "is_private_file": False}
                     )
 
-                    image_url = upload.get("url")
+                    # Ensure safe access to the URL
+                    if hasattr(upload, "get") and callable(getattr(upload, "get")):
+                        image_url = upload.get("url")
+                    elif isinstance(upload, dict):
+                        image_url = upload.get("url")
+                    else:
+                        raise ValidationError({"image_upload_error": "Unexpected response from ImageKit"})
+
                     if not image_url:
                         raise ValidationError({"image_upload_error": "ImageKit did not return a URL"})
                 except Exception as e:
-                    # Convert to string to avoid serialization error
+                    # Convert exception to string to avoid serialization issues
                     raise ValidationError({"image_upload_error": str(e)})
 
             except Exception as e:
                 raise ValidationError({"image_upload_error": str(e)})
 
+        # Save the product with farmer_id and ImageKit URL
         serializer.save(farmer_id=farmer_id, image_id=image_url)
 
 

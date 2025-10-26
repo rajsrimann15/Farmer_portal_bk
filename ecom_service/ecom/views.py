@@ -18,6 +18,7 @@ from django.utils import timezone
 from .permissions import IsAdmin
 from .utils.imagekit_helper import imagekit
 from PIL import Image
+import cloudinary.uploader
 
 
 SECRET_API_KEY = config('SECRET_API_KEY')
@@ -45,52 +46,52 @@ class ProductCreateView(generics.CreateAPIView):
 
         if image_file:
             try:
-                # Open the uploaded image
+                # Open and convert image to RGB (for JPG)
                 img = Image.open(image_file)
-
-                # Convert to RGB (necessary for JPG)
                 if img.mode in ("RGBA", "P"):
                     img = img.convert("RGB")
 
-                # Save to a BytesIO buffer as JPG
+                # Save image as JPG in-memory
                 buffer = io.BytesIO()
                 img.save(buffer, format="JPEG", quality=90)
                 buffer.seek(0)
 
-                # Generate unique filename
+                # Generate a unique filename
                 file_name = f"{uuid.uuid4()}.jpg"
 
-                # Upload to ImageKit
-                upload = imagekit.upload_file(
-                    file=buffer,
-                    file_name=file_name,
-                    options={"folder": "/products", "is_private_file": False}
+                # Upload to Cloudinary (public by default)
+                upload_result = cloudinary.uploader.upload(
+                    buffer,
+                    public_id=file_name,
+                    folder="products",
+                    resource_type="image",
+                    overwrite=True
                 )
 
-                # Ensure safe access to the URL
-                if hasattr(upload, "get") and callable(getattr(upload, "get")):
-                    image_url = upload.get("url")
-                elif isinstance(upload, dict):
-                    image_url = upload.get("url")
-                else:
-                    # Log the unexpected response for debugging
-                    print(f"Unexpected ImageKit response: {upload}")
-                    raise Exception("Unexpected response from ImageKit")
-
+                # Get the public CDN URL
+                image_url = upload_result.get("secure_url") or upload_result.get("url")
                 if not image_url:
-                    raise Exception("ImageKit did not return a URL")
+                    raise ValidationError({"image_upload_error": "Cloudinary did not return a URL"})
 
             except Exception as e:
-                # Log the actual error for debugging
-                print(f"Image upload error: {str(e)}")
-                # Return a simple error message without nesting ValidationError
-                return JsonResponse(
-                    {"error": "Image upload failed. Please try again."},
-                    status=status.HTTP_500_INTERNAL_SERVER_ERROR
-                )
+                raise ValidationError({"image_upload_error": str(e)})
 
-        # Save the product with farmer_id and ImageKit URL
-        serializer.save(farmer_id=farmer_id, image_id=image_url)
+        # Save product with farmer and image
+        product = serializer.save(farmer_id=farmer_id, image_id=image_url)
+        return product
+
+    def create(self, request, *args, **kwargs):
+        """Return the product data along with the public image URL"""
+        product = self.perform_create(self.get_serializer(data=request.data))
+        serializer = self.get_serializer(product)
+        return Response(
+            {
+                "message": "Product created successfully",
+                "product": serializer.data,
+                "public_image_url": product.image_id,
+            },
+            status=status.HTTP_201_CREATED,
+        )
 
 
 #  Consumer - List/Search Products

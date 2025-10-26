@@ -196,5 +196,3 @@ class GetLastClosedSessionView(APIView):
             return Response({"message": "No closed session found for this zone"}, status=status.HTTP_404_NOT_FOUND)
 
         return Response(session, status=status.HTTP_200_OK)
-        
-

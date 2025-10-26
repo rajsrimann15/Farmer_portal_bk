@@ -146,7 +146,13 @@ CORS_ALLOW_CREDENTIALS = True
 
 
 
-# Cloudinary configuration
+
+IMAGEKIT_PUBLIC_KEY = config('IMAGEKIT_PUBLIC_KEY')
+IMAGEKIT_PRIVATE_KEY = config('IMAGEKIT_PRIVATE_KEY')
+IMAGEKIT_URL_ENDPOINT = config('IMAGEKIT_URL_ENDPOINT')
+
+
+
 cloudinary.config(
     cloud_name=config('CLOUDINARY_CLOUD_NAME'),
     api_key=config('CLOUDINARY_API_KEY'),

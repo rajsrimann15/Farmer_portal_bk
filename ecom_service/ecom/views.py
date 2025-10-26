@@ -1,3 +1,5 @@
+import io
+import uuid
 from rest_framework import generics, filters
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -15,6 +17,8 @@ from datetime import timedelta
 from django.utils import timezone
 from .permissions import IsAdmin
 from .utils.imagekit_helper import imagekit
+from PIL import Image
+
 
 SECRET_API_KEY = config('SECRET_API_KEY')
 
@@ -41,15 +45,29 @@ class ProductCreateView(generics.CreateAPIView):
 
         if image_file:
             try:
+                # Open the uploaded image
+                img = Image.open(image_file)
+
+                # Convert to RGB (necessary for JPG)
+                if img.mode in ("RGBA", "P"):
+                    img = img.convert("RGB")
+
+                # Save to a BytesIO buffer as JPG
+                buffer = io.BytesIO()
+                img.save(buffer, format="JPEG", quality=90)
+                buffer.seek(0)
+
+                # Generate unique filename
+                file_name = f"{uuid.uuid4()}.jpg"
+
+                # Upload to ImageKit
                 upload = imagekit.upload_file(
-                    file=image_file,
-                    file_name=image_file.name,
-                    options={"folder": "/products/", "is_private_file": False}
+                    file=buffer,  # Can pass BytesIO directly
+                    file_name=file_name,
+                    options={"folder": "/products", "is_private_file": False}
                 )
 
-                #Directly use the flat dictionary keys
                 image_url = upload.get("url")
-
                 if not image_url:
                     raise ValidationError({"image_upload_error": "ImageKit did not return a URL."})
 

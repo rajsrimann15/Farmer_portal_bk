@@ -8,3 +8,4 @@ python-decouple
 cryptography
 requests
 django-cors-headers
+pika

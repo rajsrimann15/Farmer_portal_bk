@@ -8,6 +8,7 @@ from .serializers import TransportScheduleSerializer, BookingSerializer
 from datetime import datetime
 from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
+from .rabbitmq import publish_booking_event
 
 
 #HealthCheckView
@@ -176,6 +177,18 @@ class BookScheduleView(generics.CreateAPIView):
         total_cost = request.data.get("total_cost")
 
         serializer.save(farmer_id=farmer_id,total_cost=total_cost)
+        
+        # Publish booking event to RabbitMQ
+        message = {
+            "schedule": str(schedule_id),
+            "from_place": from_place,
+            "to_place": to_place,
+            "weight": weight,
+            "date": date_str,
+            "total_cost": total_cost,
+            "description": data.get("description", "")
+        }
+        publish_booking_event(message)
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 

@@ -8,6 +8,4 @@ python-decouple
 cryptography
 requests
 django-cors-headers
-imagekitio
-pillow
-apscheduler
+pika

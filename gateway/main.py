@@ -22,8 +22,8 @@ app.add_middleware(
 USER_SERVICE = config('USER_SERVICE')
 TRANSPORT_SERVICE = config('TRANSPORT_SERVICE')
 ECOM_SERVICE = config('ECOM_SERVICE')
-PRICING_SERVICE = config('SELF_PRICING_SERVICE')
 RECOMMENDATION_SERVICE = config('RECOMMENDATION_SERVICE')
+NOTIFICATION_SERVICE = config('NOTIFICATION_SERVICE')
 
 
 # Public auction endpoints (whitelist)
@@ -291,9 +291,7 @@ async def proxy_ecom_service(path: str, request: Request):
             return JSONResponse({"error": "Internal gateway error"}, status_code=500)
 
 
-# ---------- PRICING SERVICE PROXY (JWT Required) -------------
-@app.api_route("/api/self-pricing/{path:path}", methods=["GET", "POST", "PUT", "DELETE"])
-async def proxy_pricing_service(path: str, request: Request):
+
     user_id = None
     role = None
 
@@ -379,6 +377,97 @@ async def proxy_pricing_service(path: str, request: Request):
         except httpx.RequestError as e:
             return JSONResponse({"error": f"Upstream connection error: {str(e)}"}, status_code=502)
         except Exception:
+            return JSONResponse({"error": "Internal gateway error"}, status_code=500)
+
+#----------NOTFICATION SERVICE PROXY (JWT Required) -------------
+@app.api_route("/api/notifications/{path:path}", methods=["GET", "POST", "PUT", "DELETE"])
+async def proxy_notification_service(path: str, request: Request):
+    user_id = None
+    role = None
+
+    # 1️⃣ Validate JWT
+    auth = request.headers.get("Authorization")
+    if not auth or not auth.startswith("Bearer"):
+        raise HTTPException(status_code=401, detail="Missing token")
+
+    token = auth.split(" ")[1]
+    payload = verify_jwt_token(token)
+
+    user_id = payload.get("user_id")
+    role = payload.get("role")
+
+    if not user_id or not role:
+        raise HTTPException(status_code=401, detail="Invalid token claims")
+
+    # 2️⃣ Prepare request forwarding
+    async with httpx.AsyncClient() as client:
+        try:
+            body = await request.body()
+            url = f"{NOTIFICATION_SERVICE}/api/notifications/{path}"
+
+            # Copy safe headers (remove host, auth)
+            headers = {
+                k: v for k, v in request.headers.items()
+                if k.lower() not in ["host", "content-length", "authorization"]
+            }
+            headers.setdefault("User-Agent", "API-Gateway/1.0")
+
+            # 3️⃣ Add required notification headers
+            headers["X-User-Id"] = str(user_id)
+            headers["X-User-Role"] = role
+
+            # 4️⃣ Append query params if present
+            if request.url.query:
+                url += f"?{request.url.query}"
+
+            # 5️⃣ Forward the request to Notification Service
+            response = await client.request(
+                request.method.lower(),
+                url,
+                headers=headers,
+                content=body,
+                timeout=None,
+            )
+
+            # 6️⃣ Log the request to log_service
+            log_request(
+                service="NOTIFICATION_SERVICE",
+                method=request.method,
+                path=path,
+                req_headers=headers,
+                status_code=response.status_code
+            )
+
+            # 7️⃣ Return upstream response properly
+            content_type = response.headers.get("content-type", "").lower()
+            if "application/json" in content_type:
+                try:
+                    return JSONResponse(
+                        content=response.json(),
+                        status_code=response.status_code,
+                        headers=dict(response.headers)
+                    )
+                except Exception:
+                    return Response(
+                        content=response.content,
+                        status_code=response.status_code,
+                        media_type=content_type,
+                        headers=dict(response.headers)
+                    )
+
+            # For non-JSON
+            return Response(
+                content=response.content,
+                status_code=response.status_code,
+                media_type=content_type or "application/octet-stream",
+                headers=dict(response.headers)
+            )
+
+        except httpx.TimeoutException:
+            return JSONResponse({"error": "Notification service timeout"}, status_code=504)
+        except httpx.RequestError as e:
+            return JSONResponse({"error": f"Notification service connection error: {str(e)}"}, status_code=502)
+        except Exception as e:
             return JSONResponse({"error": "Internal gateway error"}, status_code=500)
 
 

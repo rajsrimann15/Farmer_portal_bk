@@ -17,6 +17,7 @@ from django.utils import timezone
 from .permissions import IsAdmin
 from PIL import Image
 import cloudinary.uploader
+from .rabbitmq import publish_booking_event
 
 
 SECRET_API_KEY = config('SECRET_API_KEY')
@@ -118,6 +119,18 @@ class BookProductView(generics.CreateAPIView):
         product.quantity_available -= quantity
         product.save()
         serializer.save(consumer_id=consumer_id)
+
+        message = {
+            "product_id": str(product.id),
+            "consumer_id": consumer_id,
+            "farmer_id": product.farmer_id,
+            "quantity": quantity,
+            "name": product.name,
+        }
+        # Here you can publish the message to RabbitMQ or any other service
+        publish_booking_event(message)
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 #  Farmer - Get All Bookings for Their Products

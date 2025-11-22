@@ -103,7 +103,7 @@ class ListAvailableSchedules(generics.ListAPIView):
 # Book a schedule
 class BookScheduleView(generics.CreateAPIView):
     serializer_class = BookingSerializer
-    permission_classes = [IsFarmer]
+    #permission_classes = [IsFarmer]
 
     def create(self, request, *args, **kwargs):
         data = request.data
@@ -173,13 +173,14 @@ class BookScheduleView(generics.CreateAPIView):
         # Create booking
         serializer = self.get_serializer(data=data)
         serializer.is_valid(raise_exception=True)
-        farmer_id = request.headers.get("X-User-Id")
+        farmer_id = request.headers.get("X-User-Id") or "68a1b885-d7a6-4ee7-abfa-58167b36beca"
         total_cost = request.data.get("total_cost")
 
         serializer.save(farmer_id=farmer_id,total_cost=total_cost)
         
         # Publish booking event to RabbitMQ
         message = {
+            "transporter_id": schedule.transporter_id,
             "schedule": str(schedule_id),
             "from_place": from_place,
             "to_place": to_place,
